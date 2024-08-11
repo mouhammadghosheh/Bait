@@ -72,8 +72,8 @@ const AppNavigator = () => {
         onAuthStateChanged(authentication, (user) => {
             if (user) {
                 setIsAuthenticated(true);
-                fetchUserData();
-                fetchProducts()
+                fetchUserData().then(r => r);
+                fetchProducts().then(r => r);
             } else {
                 setIsAuthenticated(false);
                 setIsLoading(false);

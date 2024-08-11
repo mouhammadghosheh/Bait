@@ -61,7 +61,7 @@ const IndividualProductCarousel = ({ data, seeMore = true }) => {
                                 borderRadius: 10,
                             }}
                         >
-                            <Image style={{ height: 100, borderRadius: 40, resizeMode: "contain", marginVertical: 10 }}
+                            <Image style={{ height: 100, borderRadius: 20, resizeMode: "cover", marginVertical: 20}}
                                    source={{ uri: item.Image }} />
                             <View style={{ paddingHorizontal: 10 }}>
                                 {/* Product name */}
@@ -99,7 +99,7 @@ const IndividualProductCarousel = ({ data, seeMore = true }) => {
 
                             }}
                         >
-                            <Image style={{ height: 100, borderRadius: 40, resizeMode: "contain", marginVertical: 1}}
+                            <Image style={{ height: 100, borderRadius: 20, resizeMode: "cover", marginVertical: 10}}
                                    source={{ uri: item.Image }} />
                             <View style={{ paddingHorizontal: 10 }}>
                                 {/* Product name */}

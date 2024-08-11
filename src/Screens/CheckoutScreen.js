@@ -6,15 +6,17 @@ import {
     ScrollView,
     View,
     Platform,
-    Alert, useColorScheme, StyleSheet,
-
+    Alert,
+    useColorScheme,
+    StyleSheet,
+    ActivityIndicator
 } from 'react-native';
-import { TextInput, useTheme} from 'react-native-paper';
-import {PROVIDER_DEFAULT, PROVIDER_GOOGLE} from 'react-native-maps'
+import { TextInput, useTheme } from 'react-native-paper';
+import { PROVIDER_DEFAULT, PROVIDER_GOOGLE } from 'react-native-maps';
 import BottomSheet from '@gorhom/bottom-sheet';
 import Toast from "react-native-toast-message";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { myColors as color} from '../Utils/MyColors';
+import { myColors as color } from '../Utils/MyColors';
 import { ThemeContext } from '../../contexts/ThemeContext';
 import Logo from '../Components/Logo';
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -22,9 +24,10 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Location from 'expo-location';
 import MapView, { Marker } from 'react-native-maps';
 import AwesomeButton from "react-native-really-awesome-button";
-import MapStyle from "../Utils/MapStyle.json"
+import MapStyle from "../Utils/MapStyle.json";
+
 export default function CheckoutScreen() {
-    const mapStyle = MapStyle
+    const mapStyle = MapStyle;
     const [inputValues, setInputValues] = useState({
         cityName: '',
         streetName: '',
@@ -68,6 +71,7 @@ export default function CheckoutScreen() {
 
         })();
     }, []);
+
     const handleInputChange = (name, value) => {
         setInputValues(prevState => ({
             ...prevState,
@@ -78,22 +82,22 @@ export default function CheckoutScreen() {
     const focusNextInput = (key) => {
         inputRefs[key].current.focus();
     };
+
     const getLocation = async () => {
         setLoadingLocation(true);
         try {
             let location = await Location.getCurrentPositionAsync({});
             setLocation(location.coords);
+            setSheetIndex(0); // Open bottom sheet after location is retrieved
         } catch (error) {
             console.log(error);
             Alert.alert('Error getting location', 'Please try again.');
         } finally {
             setLoadingLocation(false);
             Toast.show({
-                type:'success',
-                text1 : 'Location was successfully shared 📍',
-                onPress: () => {        setSheetIndex(sheetIndex === 0 ? 1 : 0)
-                }
-            })
+                type: 'success',
+                text1: 'Location was successfully shared 📍',
+            });
         }
     };
 
@@ -106,7 +110,7 @@ export default function CheckoutScreen() {
             if (Platform.OS === 'ios') {
                 setTimeout(() => {
                     scrollViewRef.current.scrollToEnd({ animated: true });
-                },);
+                }, 100);
             }
         } else {
             setShowDatePicker(false);
@@ -116,11 +120,10 @@ export default function CheckoutScreen() {
     const handlePayment = (option) => {
         setSelectedPaymentMethod(option);
     };
-    const shareLoc = () => {
-        setSheetIndex(sheetIndex === 0 ? 1 : 0)
-        getLocation()
 
-    }
+    const shareLoc = () => {
+        getLocation();
+    };
 
     const handleDateChange = (event, selectedDate) => {
         const currentDate = selectedDate || date;
@@ -164,7 +167,7 @@ export default function CheckoutScreen() {
                             <View>
                                 <Text style={styles.label}>City Name</Text>
                                 <TextInput
-                                    style={styles.input }
+                                    style={styles.input}
                                     mode="outlined"
                                     placeholderTextColor={myColors.placeholder}
                                     onChangeText={(text) => handleInputChange('cityName', text)}
@@ -232,23 +235,26 @@ export default function CheckoutScreen() {
     }
 
     return (
-        <SafeAreaView style={styles.safe} >
+        <SafeAreaView style={styles.safe}>
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container} ref={scrollViewRef}>
                 <Logo />
-                <Text style={styles.header }>Checkout</Text>
+                <Text style={styles.header}>Checkout</Text>
                 {/* Shipping Information */}
 
                 <TouchableOpacity
-                    style={styles.button }
+                    style={styles.button}
                     onPress={shareLoc} // Toggle bottom sheet
+                    disabled={loadingLocation}
                 >
-                    <Text style={styles.buttonText}>
-                        {loadingLocation ? 'Getting Address...' : 'Share Address'}
-                    </Text>
+                    {loadingLocation ? (
+                        <ActivityIndicator color={myColors.text} />
+                    ) : (
+                        <Text style={styles.buttonText}>Share Address</Text>
+                    )}
                 </TouchableOpacity>
 
                 {/* Delivery Options */}
-                <Text style={styles.subheader }>Delivery Options</Text>
+                <Text style={styles.subheader}>Delivery Options</Text>
                 <View style={styles.deliveryContainer}>
                     <TouchableOpacity
                         style={[
@@ -258,7 +264,7 @@ export default function CheckoutScreen() {
                         onPress={() => handleDeliveryOptionSelect('today')}
                     >
                         <Icon name="truck" size={24} color={myColors.text} />
-                        <Text style={styles.highlightButtonText }>Deliver Today</Text>
+                        <Text style={styles.highlightButtonText}>Deliver Today</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={[
@@ -315,7 +321,7 @@ export default function CheckoutScreen() {
                 </View>
 
                 <TouchableOpacity
-                    style={styles.button }
+                    style={styles.button}
                     onPress={() => {
                         const locationUrl = location ? getGoogleMapsUrl(location) : null;
                         navigation.navigate('OrderConfirmation', {
@@ -327,20 +333,22 @@ export default function CheckoutScreen() {
                         });
                     }}
                 >
-                    <Text style={styles.buttonText }>Confirm Order</Text>
+                    <Text style={styles.buttonText}>Confirm Order</Text>
                 </TouchableOpacity>
             </ScrollView>
-            <BottomSheet ref={sheetRef}
-                         index={sheetIndex}
-                         snapPoints={snapPoints}
-                         enablePanDownToClose={true}
-                         onChange={(index) => setSheetIndex(index)}>
+            <BottomSheet
+                ref={sheetRef}
+                index={sheetIndex}
+                snapPoints={snapPoints}
+                enablePanDownToClose={true}
+                onChange={(index) => setSheetIndex(index)}
+            >
                 {renderContent()}
-
             </BottomSheet>
         </SafeAreaView>
     );
 }
+
 const GetStyles = (myColors) => StyleSheet.create({
     safe: {
         flex: 1,
