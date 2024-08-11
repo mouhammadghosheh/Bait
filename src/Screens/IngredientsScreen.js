@@ -14,7 +14,6 @@ export default function IngredientsScreen({ route }) {
     const { dish } = route.params;
     const styles = getStyles(myColors);
 
-    console.log(dish)
 
 
 
@@ -25,7 +24,6 @@ export default function IngredientsScreen({ route }) {
 
     const handleAddToCart = (item) => {
         dispatch(addToCart({ Image: item.Image, Name: item.Name, Price: item.Price,ID: item.ID,quantity: item.quantity }));
-        console.log("Added to cart", item);
     };
 
     const renderContent = () => (

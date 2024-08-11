@@ -13,7 +13,6 @@ const ProductDetailsPopup = ({route}) => {
     let myColors = color[theme.mode];
     const dispatch = useDispatch();
     const productData = route.params.main;
-    console.log(productData)
     const {name, price, img} = productData
 
     const nav = useNavigation();

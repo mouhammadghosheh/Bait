@@ -90,7 +90,6 @@ const OrderServices = async (items, total, selectedDate, selectedPaymentMethod, 
             }
         }
 
-        console.log('Order uploaded and stock updated successfully');
         return { status: 'success', message: 'Order uploaded and stock updated successfully' };
     } catch (error) {
         console.error('Error uploading order: ', error);

@@ -1,5 +1,5 @@
-import React, { useState, useContext } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image, SafeAreaView } from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image, SafeAreaView, ActivityIndicator } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
@@ -17,13 +17,23 @@ const CategoryProducts = () => {
     const route = useRoute();
     const navigation = useNavigation();
     const { categoryName } = route.params;
+
+    const [products, setProducts] = useState([]);
     const [showAnimation, setShowAnimation] = useState(false);
     const [itemNameForAnimation, setItemNameForAnimation] = useState('');
-    const dispatch = useDispatch(); //dispatch from redux
-    const filteredProducts = ProductServices(categoryName);
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            const fetchedProducts = await ProductServices(categoryName);
+            setProducts(fetchedProducts);
+        };
+
+        fetchProducts();
+    }, [categoryName]);
 
     const renderProductItem = ({ item }) => (
-        <TouchableOpacity onPress={() => console.log('Product clicked:', item)} disabled={!item.Stock}>
+        <TouchableOpacity  disabled={!item.Stock}>
             <View style={styles.productItem}>
                 <Image source={{ uri: item.Image }} style={item.Stock ? styles.image : styles.outOfStockImage} />
                 <View style={styles.productDetails}>
@@ -34,8 +44,15 @@ const CategoryProducts = () => {
                             <TouchableOpacity
                                 style={styles.addToCartButton}
                                 onPress={() => {
-                                    //send the payload to the cart
-                                    dispatch(addToCart({ Image: item.Image, Name: item.Name, Price: item.Price, Scale: item.Scale, ID: item.ID, Category: item.Category, quantity: 1 }));
+                                    dispatch(addToCart({
+                                        Image: item.Image,
+                                        Name: item.Name,
+                                        Price: item.Price,
+                                        Scale: item.Scale,
+                                        ID: item.ID,
+                                        Category: item.Category,
+                                        quantity: 1
+                                    }));
                                     setItemNameForAnimation(item.Name);
                                     setShowAnimation(true);
                                     setTimeout(() => setShowAnimation(false), 2500);
@@ -50,7 +67,9 @@ const CategoryProducts = () => {
             </View>
         </TouchableOpacity>
     );
-    //back button
+
+
+
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.contentContainer}>
@@ -62,7 +81,7 @@ const CategoryProducts = () => {
                     <View style={styles.invisibleView} />
                 </View>
                 <FlatList
-                    data={filteredProducts}
+                    data={products}
                     renderItem={renderProductItem}
                     keyExtractor={(item) => item.id}
                     contentContainerStyle={styles.flatListContent}
