@@ -3,7 +3,6 @@ import { SafeAreaView, View, Text, FlatList, TouchableOpacity, StyleSheet, Statu
 import regionsServices from '../../Services/regionsServices';
 import { myColors as color } from "../Utils/MyColors";
 import { ThemeContext } from "../../contexts/ThemeContext";
-import { SharedElement } from 'react-navigation-shared-element';
 import Logo from "../Components/Logo";
 
 export default function RegionalDishesScreen({ navigation }) {
@@ -37,9 +36,8 @@ export default function RegionalDishesScreen({ navigation }) {
                         style={styles.item }
                         onPress={() => navigation.navigate('Dishes', { regionId: item.id, name: item.name,image: item.image })}
                     >
-                        <SharedElement id={item.id}>
                             <Image style={styles.regionImage} source={{ uri: item.image }} />
-                        </SharedElement>
+
                         <Text style={styles.title }>{item.name}</Text>
                     </TouchableOpacity>
                 )}

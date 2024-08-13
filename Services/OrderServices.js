@@ -1,5 +1,5 @@
 import { db, authentication } from '../Firebaseconfig';
-import { collection, doc, setDoc, serverTimestamp, updateDoc, getDoc } from 'firebase/firestore';
+import { collection, doc, setDoc, serverTimestamp, updateDoc, getDoc, writeBatch } from 'firebase/firestore';
 
 const generateOrderId = () => {
     // Generate a random 6-digit number
@@ -46,9 +46,11 @@ const OrderServices = async (items, total, selectedDate, selectedPaymentMethod, 
             }
         }
 
-        // If all stock checks passed, proceed to create order data
-        const orderRef = doc(collection(db, 'Users', user.uid, 'orders'), orderId.toString());
+        // Prepare batch write for updating stock
+        const batch = writeBatch(db);
 
+        // Create order data
+        const orderRef = doc(collection(db, 'Users', user.uid, 'orders'), orderId.toString());
         const orderData = {
             id: orderId,
             items: items,
@@ -63,7 +65,7 @@ const OrderServices = async (items, total, selectedDate, selectedPaymentMethod, 
         // Upload order data to Firestore
         await setDoc(orderRef, orderData);
 
-        // Update stock for each item
+        // Update stock for each item using batch write
         for (const item of items) {
             if (item && item.ID && item.quantity !== undefined) {
                 const productRef = doc(db, 'Products', item.ID);
@@ -78,7 +80,7 @@ const OrderServices = async (items, total, selectedDate, selectedPaymentMethod, 
                         const newStock = productData.Stock - item.quantity;
 
                         // Update stock in Firestore
-                        await updateDoc(productRef, { Stock: newStock });
+                        batch.update(productRef, { Stock: newStock });
                     } else {
                         console.error(`Product with ID ${item.ID} has no Stock field or invalid Stock field`);
                     }
@@ -89,6 +91,9 @@ const OrderServices = async (items, total, selectedDate, selectedPaymentMethod, 
                 console.error('Item object is missing required properties: ID or quantity');
             }
         }
+
+        // Commit the batch
+        await batch.commit();
 
         return { status: 'success', message: 'Order uploaded and stock updated successfully' };
     } catch (error) {
