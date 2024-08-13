@@ -13,6 +13,9 @@ import OrderConfirmationScreen from "../src/Screens/OrderConfirmationScreen";
 import SettingsScreen from "../src/Screens/SettingsScreen";
 import Cart from "../src/Screens/Cart";
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
+import SpecialDishScreen from "../src/Screens/SpecialDishScreen";
+import AddDishScreen from "../src/Screens/AddDishScreen";
+import AddRecipeStepsScreen from "../src/Screens/AddRecipeStepsScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -65,6 +68,10 @@ export const DishesStack = () => {
             <Stack.Screen name="RegionalDishes" component={RegionalDishesScreen} />
             <Stack.Screen name="Dishes" component={Dishes} />
             <Stack.Screen name="DishDetails" component={IngredientsScreen} />
+            <Stack.Screen name="SpecialDishScreen" component={SpecialDishScreen} />
+            <Stack.Screen name="AddDish" component={AddDishScreen} />
+            <Stack.Screen name="AddRecipeStepsScreen" component={AddRecipeStepsScreen} />
+
         </Stack.Navigator>
     );
 };
