@@ -5,10 +5,10 @@ import AuthStack from './AuthStack'; // Import your authentication stack
 import HomeStack from './BottomTabBar'; // Import your home stack
 import { onAuthStateChanged } from "firebase/auth";
 import { authentication, db } from "../Firebaseconfig";
-import {collection, doc, getDoc, getDocs, query} from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, query } from "firebase/firestore";
 import { useUser } from "../contexts/UserContext";
 import LoadingScreen from "../src/Components/LoadingScreen";
-import {useProducts} from "../contexts/ProductContext";
+import { useProducts } from "../contexts/ProductContext";
 import { enableScreens } from 'react-native-screens';
 
 enableScreens();
@@ -18,7 +18,7 @@ const AppNavigator = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [userData, setUserData] = useState(null);
     const { setUser } = useUser();
-    const {setProducts} = useProducts()
+    const { setProducts } = useProducts();
     const [isLoading, setIsLoading] = useState(true); // State to control loading
 
     // Function to handle successful login
@@ -37,47 +37,39 @@ const AppNavigator = () => {
                     const userData = userDocSnap.data();
                     setUser(userData);
                     setUserData(userData);
-                    setIsLoading(false); // Set loading to false when data is fetched
                 }
             } catch (error) {
                 console.error("Error fetching user data:", error);
             }
         }
     };
+
+    // Function to fetch products
     const fetchProducts = async () => {
+        try {
+            const productRef = collection(db, 'Products');
+            const q = query(productRef);
+            const querySnapshot = await getDocs(q);
+            setProducts(querySnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            })));
+        } catch (error) {
+            console.error("Error fetching products:", error);
+        }
+    };
 
-            try {
-                const productRef = collection(db, 'Products');
-
-                const q = query(productRef);
-
-                const querySnapshot = await getDocs(q);
-
-
-                setProducts(querySnapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data()
-                })))
-
-
-                setIsLoading(false);
-                }
-             catch (error) {
-                console.error("Error fetching user data:", error);
-            }
-        };
-
-
+    // Check authentication status
     const checkAuthentication = () => {
-        onAuthStateChanged(authentication, (user) => {
+        onAuthStateChanged(authentication, async (user) => {
             if (user) {
                 setIsAuthenticated(true);
-                fetchUserData().then(r => r);
-                fetchProducts().then(r => r);
+                await fetchUserData();
+                await fetchProducts();
             } else {
                 setIsAuthenticated(false);
-                setIsLoading(false);
             }
+            setIsLoading(false); // Set loading to false after checking auth state
         });
     };
 
