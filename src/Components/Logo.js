@@ -12,10 +12,8 @@ const Logo = ({ width = 150, height = 150 }) => {
 const styles = StyleSheet.create({
     header: {
         alignItems: 'center',
-        marginVertical: 20,
     },
     logo: {
-        // width and height will be set dynamically
     },
 });
 

@@ -16,6 +16,7 @@ import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import SpecialDishScreen from "../src/Screens/SpecialDishScreen";
 import AddDishScreen from "../src/Screens/AddDishScreen";
 import AddRecipeStepsScreen from "../src/Screens/AddRecipeStepsScreen";
+import PublicDishes from "../src/Screens/PublicDishes";
 
 const Stack = createNativeStackNavigator();
 
@@ -71,6 +72,7 @@ export const DishesStack = () => {
             <Stack.Screen name="SpecialDishScreen" component={SpecialDishScreen} />
             <Stack.Screen name="AddDish" component={AddDishScreen} />
             <Stack.Screen name="AddRecipeStepsScreen" component={AddRecipeStepsScreen} />
+            <Stack.Screen name="PublicDishes" component={PublicDishes} />
 
         </Stack.Navigator>
     );

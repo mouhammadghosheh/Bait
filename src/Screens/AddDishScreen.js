@@ -2,8 +2,6 @@ import React, { useContext, useState } from 'react';
 import { SafeAreaView, StyleSheet, View, TextInput, TouchableOpacity, Text, FlatList, Image, Alert } from 'react-native';
 import { useProducts } from "../../contexts/ProductContext";
 import { myColors as color } from "../Utils/MyColors";
-import { addDoc, collection, doc } from "firebase/firestore";
-import { db, authentication } from "../../Firebaseconfig";
 import { ThemeContext } from "../../contexts/ThemeContext";
 import * as ImagePicker from 'expo-image-picker';
 
@@ -86,31 +84,6 @@ const AddDishScreen = ({ navigation }) => {
         });
     };
 
-    const handleSaveDish = async () => {
-        const user = authentication.currentUser;
-        if (user) {
-            const ingredients = selectedIngredients.map(ID => {
-                const product = products.find(p => p.ID === ID);
-                return {
-                    ID,
-                    Name: product ? product.Name : 'Unknown',
-                    quantity: quantities[ID],
-                    Price: product ? product.Price : 0,  // Adding price
-                    Image: product ? product.Image : ''  // Adding image
-                };
-            });
-
-            const newDish = {
-                ID: DishID,
-                Name: dishName,
-                ingredients,
-                Image: dishImage,
-            };
-
-            await addDoc(collection(doc(db, "Users", user.uid), "CustomDishes"), newDish);
-            navigation.goBack();
-        }
-    };
 
     const pickImage = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -138,7 +111,7 @@ const AddDishScreen = ({ navigation }) => {
 
         const result = await ImagePicker.launchCameraAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            quality: 1,
+            quality: 0,
         });
 
         if (!result.canceled) {

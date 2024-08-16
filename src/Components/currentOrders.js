@@ -10,10 +10,10 @@ import {
     LayoutAnimation,
     UIManager,
     Platform
-} from "react-native"; // Import LayoutAnimation and UIManager
+} from "react-native";
 import GetOrders from "../../Services/GetOrders";
 import { ThemeContext } from "../../contexts/ThemeContext";
-import { myColors, myColors as color } from "../Utils/MyColors"; // Assuming this path is correct
+import {  myColors as color } from "../Utils/MyColors"; // Assuming this path is correct
 import { Ionicons } from "@expo/vector-icons";
 
 // Enable LayoutAnimation for Android
@@ -65,7 +65,6 @@ const CurrentOrderScreen = ({ status }) => {
         if (ScheduledDelivery == null) {
             ScheduledDelivery = "immediate";
         }
-        console.log("Scheduled Delivery is " + ScheduledDelivery)
         return (
             <TouchableOpacity activeOpacity={.8} style={styles.orderItem} onPress={() => toggleExpand(index)}>
                 <Text style={styles.orderTitle}>Order ID: {item.id}</Text>
