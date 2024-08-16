@@ -8,31 +8,12 @@ import Logo from "../Components/Logo";
 import { TabView, TabBar } from 'react-native-tab-view';
 import StepIndicator from 'react-native-step-indicator';
 
-//Sample dish object with mock steps
-// const dish = {
-//     Name: 'Chocolate Cake',
-//     ingredients: [
-//         { ID: '1', Name: 'Flour', quantity: '2 cups', Price: '10', Image: 'https://example.com/flour.jpg' },
-//         { ID: '2', Name: 'Sugar', quantity: '1 cup', Price: '5', Image: 'https://example.com/sugar.jpg' },
-//         { ID: '3', Name: 'Cocoa Powder', quantity: '1/2 cup', Price: '15', Image: 'https://example.com/cocoa.jpg' },
-//         { ID: '4', Name: 'Butter', quantity: '1/2 cup', Price: '20', Image: 'https://example.com/butter.jpg' },
-//     ],
-//     steps: [
-//         { ID: '1', description: 'Preheat the oven to 350°F (175°C).' },
-//         { ID: '2', description: 'In a bowl, mix the flour, sugar, and cocoa powder.' },
-//         { ID: '3', description: 'Add melted butter and mix until smooth.' },
-//         { ID: '4', description: 'Pour the mixture into a greased pan and bake for 30 minutes.' },
-//         { ID: '5', description: 'Let it cool before serving.' },
-//     ]
-// };
-
 export default function IngredientsScreen({ route }) {
     const [theme] = useContext(ThemeContext);
     const myColors = color[theme.mode];
     const styles = getStyles(myColors);
-    const {dish} = route.params;
+    const { dish } = route.params;
     const dispatch = useDispatch();
-
     const handleAddToCart = (item) => {
         dispatch(addToCart({ Image: item.Image, Name: item.Name, Price: item.Price, ID: item.ID, quantity: item.quantity }));
     };
@@ -52,8 +33,6 @@ export default function IngredientsScreen({ route }) {
             flatListRef.current.scrollToIndex({ index: stepIndex, animated: true });
         }
     };
-
-
 
     useEffect(() => {
         if (flatListRef.current) {
@@ -83,32 +62,36 @@ export default function IngredientsScreen({ route }) {
                     />
                 );
             case 'steps':
-                return (
-                        <View style={styles.stepperContainer}>
-                            <View style={styles.stepIndicatorWrapper}>
-                                <StepIndicator
-                                    customStyles={stepIndicatorStyles(myColors)}
-                                    currentPosition={stepIndex}
-                                    stepCount={dish.steps.length}
-                                    direction="vertical"
-                                    onPress={handleStepIndicatorPress}
-                                />
-                            </View>
-                            <FlatList
-                                ref={flatListRef}
-                                data={dish.steps}
-                                keyExtractor={item => item.ID}
-                                renderItem={({ item, index: itemIndex }) => (
-                                    itemIndex === stepIndex && (
-                                        <View style={styles.stepContainer}>
-                                            <Text style={styles.stepTitle}>Step {itemIndex + 1}</Text>
-                                            <Text style={styles.stepDescription}>{item.description}</Text>
-                                        </View>
-                                    )
-                                )}
-                                scrollEnabled={false} // Disable internal scrolling to sync with StepIndicator
+                return dish.steps.length === 0 ? (
+                    <View style={styles.noStepsContainer}>
+                        <Text style={styles.noStepsText}>No steps available for this dish.</Text>
+                    </View>
+                ) : (
+                    <View style={styles.stepperContainer}>
+                        <View style={styles.stepIndicatorWrapper}>
+                            <StepIndicator
+                                customStyles={stepIndicatorStyles(myColors)}
+                                currentPosition={stepIndex}
+                                stepCount={dish.steps.length}
+                                direction="vertical"
+                                onPress={handleStepIndicatorPress}
                             />
                         </View>
+                        <FlatList
+                            ref={flatListRef}
+                            data={dish.steps}
+                            keyExtractor={item => item.ID}
+                            renderItem={({ item, index: itemIndex }) => (
+                                itemIndex === stepIndex && (
+                                    <View style={styles.stepContainer}>
+                                        <Text style={styles.stepTitle}>Step {itemIndex + 1}</Text>
+                                        <Text style={styles.stepDescription}>{item.description}</Text>
+                                    </View>
+                                )
+                            )}
+                            scrollEnabled={false} // Disable internal scrolling to sync with StepIndicator
+                        />
+                    </View>
                 );
             default:
                 return null;
@@ -148,12 +131,12 @@ const stepIndicatorStyles = (myColors) => ({
     stepStrokeCurrentColor: myColors.clickable,
     stepIndicatorCurrentColor: myColors.clickable,
     stepIndicatorLabelCurrentColor: myColors.text,
-    labelSize : 16,
+    labelSize: 16,
     currentStepIndicatorLabelFontSize: 19,
     labelColor: myColors.text,
     currentStepLabelColor: myColors.clickable,
-        stepIndicatorUnFinishedColor : myColors.tertiary,
-    stepIndicatorLabelUnFinishedColor : myColors.text
+    stepIndicatorUnFinishedColor: myColors.tertiary,
+    stepIndicatorLabelUnFinishedColor: myColors.text
 });
 
 const getStyles = (myColors) => StyleSheet.create({
@@ -237,14 +220,14 @@ const getStyles = (myColors) => StyleSheet.create({
     },
     stepperContainer: {
         flex: 1,
-        flexDirection: 'row', // Change this to row for RTL direction
+        flexDirection: 'row',
         paddingHorizontal: 16,
         alignItems: 'center',
     },
     stepIndicatorWrapper: {
-        flexDirection: 'column', // Change this to column for RTL direction
-        alignItems: 'flex-start', // Align the step indicator to the start
-        marginRight: 20, // Space between step indicator and content
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        marginRight: 20,
     },
     stepContainer: {
         marginBottom: 10,
@@ -258,5 +241,16 @@ const getStyles = (myColors) => StyleSheet.create({
     stepDescription: {
         fontSize: 16,
         color: myColors.text
+    },
+    noStepsContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    noStepsText: {
+        fontSize: 18,
+        color: myColors.text,
+        textAlign: 'center',
+        padding: 20,
     },
 });

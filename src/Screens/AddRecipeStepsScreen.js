@@ -16,6 +16,7 @@ import { addDoc, collection, doc } from "firebase/firestore";
 import { ThemeContext } from "../../contexts/ThemeContext";
 import { useProducts } from "../../contexts/ProductContext";
 import Logo from "../Components/Logo";
+import {useUser} from "../../contexts/UserContext";
 
 const AddRecipeStepsScreen = () => {
     const route = useRoute();
@@ -27,7 +28,13 @@ const AddRecipeStepsScreen = () => {
     const [theme] = useContext(ThemeContext);
     let myColors = color[theme.mode];
     const styles = getStyles(myColors);
-
+    const { user } = useUser();
+    const auth = authentication.currentUser
+    const userInfo = {
+        name: user.name,
+        email: user.email,
+    };
+    console.log(userInfo)
     const addStep = () => {
         if (newStep.trim()) {
             const newStepID = (steps.length + 1).toString();
@@ -42,8 +49,7 @@ const AddRecipeStepsScreen = () => {
             return;
         }
 
-        const user = authentication.currentUser;
-        if (user) {
+        if (auth) {
             const ingredients = selectedIngredients.map(ID => {
                 const product = products.find(p => p.ID === ID);
                 return {
@@ -54,16 +60,17 @@ const AddRecipeStepsScreen = () => {
                     Image: product ? product.Image : ''
                 };
             });
-
             const newDish = {
                 ID: dishID,
                 Name: dishName,
                 ingredients,
                 Image: dishImage,
                 steps,
+                User: userInfo.name,
+
             };
 
-            await addDoc(collection(doc(db, "Users", user.uid), "CustomDishes"), newDish);
+            await addDoc(collection(doc(db, "Users", auth.uid), "CustomDishes"), newDish);
             navigation.navigate('SpecialDishScreen');
             Alert.alert(`${dishName} is added successfully`);
         }

@@ -15,8 +15,7 @@ export default function RegionalDishesScreen({ navigation }) {
         const fetch = async () => {
             try {
                 const regionsData = await regionsServices();
-                // Append a custom card placeholder to the data
-                setRegions([...regionsData, { id: 'customCard' }]);
+                setRegions([{ id: 'customCard' }, ...regionsData]);
             } catch (err) {
                 console.error(err);
             }
@@ -25,7 +24,6 @@ export default function RegionalDishesScreen({ navigation }) {
     }, []);
 
     const renderItem = ({ item }) => {
-        // Check if this is the custom card placeholder
         if (item.id === 'customCard') {
             return (
                 <View style={styles.customCard}>
@@ -43,11 +41,16 @@ export default function RegionalDishesScreen({ navigation }) {
                     >
                         <Text style={styles.customCardButtonText}>My Dishes</Text>
                     </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.customCardButton}
+                        onPress={() => navigation.navigate('PublicDishes')}
+                    >
+                        <Text style={styles.customCardButtonText}>View Public Dishes</Text>
+                    </TouchableOpacity>
                 </View>
             );
         }
 
-        // Render regular region items
         return (
             <TouchableOpacity
                 style={styles.item}
@@ -61,7 +64,7 @@ export default function RegionalDishesScreen({ navigation }) {
 
     return (
         <SafeAreaView style={styles.safe}>
-            <Logo />
+            <Logo width={100} height={100} />
             <View style={styles.ing}>
                 <Text style={styles.header}>Select a Region</Text>
             </View>
@@ -82,7 +85,6 @@ const getStyles = (myColors) => StyleSheet.create({
     },
     logoContainer: {
         alignItems: 'center',
-        marginVertical: 10,
     },
     logo: {
         width: 150,
@@ -93,7 +95,6 @@ const getStyles = (myColors) => StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         textAlign: 'center',
-        marginVertical: 10,
         color: myColors.text,
     },
     item: {
@@ -150,6 +151,7 @@ const getStyles = (myColors) => StyleSheet.create({
         width : '100%',
         alignItems : 'center',
         borderRadius: 10,
+        marginBottom  : 10,
     },
     customCardButtonText: {
         color: myColors.text,

@@ -23,7 +23,7 @@ const Dishes = ({ navigation }) => {
 
         fetchDishes();
     }, [regionId]);
-
+    console.log(dishes)
     const renderItem = ({ item }) => (
         <TouchableOpacity style={styles.dishItem} onPress={() => navigation.navigate('DishDetails', { dish: item })}>
             <Image source={{ uri: item.Image }} style={styles.dishImage} />

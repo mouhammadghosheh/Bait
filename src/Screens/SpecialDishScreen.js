@@ -9,17 +9,21 @@ import {
     Text,
     FlatList,
     Image,
-    ActivityIndicator
+    ActivityIndicator,
+    Alert
 } from "react-native";
-import { useProducts } from "../../contexts/ProductContext";
 import { ThemeContext } from "../../contexts/ThemeContext";
 import { myColors as color } from "../Utils/MyColors";
 import CustomDishesServices from '../../Services/CustomDishesServices';
 import Logo from "../Components/Logo";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import {db} from "../../Firebaseconfig";
+import {addDoc, collection, getDocs, query, serverTimestamp, where} from "firebase/firestore";
+import {useUser} from "../../contexts/UserContext";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const SpecialDishScreen = () => {
-    const { products } = useProducts();
     const [theme] = useContext(ThemeContext);
     const [customDishes, setCustomDishes] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -27,7 +31,28 @@ const SpecialDishScreen = () => {
     const navigation = useNavigation();
     const myColors = color[theme.mode];
     const styles = getStyles(myColors);
+    const { user } = useUser();
 
+    const userInfo = {
+        name: user.name,
+        email: user.email,
+    };
+    const uploadImage = async (uri, imageName) => {
+        const storage = getStorage();
+        const imageRef = ref(storage, 'dishes/' + imageName);
+
+        // Convert URI to Blob
+        const response = await fetch(uri);
+        const blob = await response.blob();
+
+        // Upload image
+        await uploadBytes(imageRef, blob);
+
+        // Get the public URL
+        const downloadURL = await getDownloadURL(imageRef);
+
+        return downloadURL;
+    };
     const fetchDishes = async () => {
         setLoading(true);
         try {
@@ -55,6 +80,57 @@ const SpecialDishScreen = () => {
         navigation.navigate('AddDish');
     };
 
+    const handleShareDish = (dish) => {
+        Alert.alert(
+            "Share Dish",
+            "Do you want to share this dish to the Public Dishes?",
+            [
+                {
+                    text: "Cancel",
+                    style: "cancel"
+                },
+                {
+                    text: "Share",
+                    onPress: async () => {
+                        try {
+                            // Reference to the 'PublicDishes' collection
+                            const dishesCollectionRef = collection(db, 'PublicDishes');
+
+                            // Check if the dish is already in the PublicDishes collection
+                            const dishQuery = query(dishesCollectionRef, where('ID', '==', dish.ID));
+                            const dishSnapshot = await getDocs(dishQuery);
+
+                            if (dishSnapshot.empty) {
+                                // Upload image and get public URL
+                                const imageUrl = dish.Image ? await uploadImage(dish.Image, dish.ID) : null;
+
+                                // Add the dish to the PublicDishes collection
+                                await addDoc(dishesCollectionRef, {
+                                    Name: dish.Name,
+                                    ID: dish.ID,
+                                    Image: imageUrl, // Use the public URL
+                                    ingredients: dish.ingredients,
+                                    steps: dish.steps,
+                                    User: userInfo.name,
+                                    likes: [],
+                                    sharedAt: serverTimestamp()
+                                });
+
+                                Alert.alert("Success", `Dish ${dish.Name} shared to Public Dishes.`);
+                            } else {
+                                Alert.alert("Info", "This dish is already shared to Public Dishes.");
+                            }
+                        } catch (error) {
+                            console.error("Error sharing dish: ", error);
+                            Alert.alert("Error", "Failed to share the dish. Please try again later.");
+                        }
+                    }
+                }
+            ]
+        );
+    };
+
+
     const renderItem = ({ item }) => (
         <TouchableOpacity onPress={() => navigation.navigate('DishDetails', { dish: item })} style={styles.dishItem}>
             {item.Image && (
@@ -66,6 +142,9 @@ const SpecialDishScreen = () => {
                     Ingredients: {item.ingredients.map(ing => ing.Name).join(', ')}
                 </Text>
             </View>
+            <TouchableOpacity onPress={() => handleShareDish(item)} style={styles.shareButton}>
+                <Icon name="share" size={24} color={myColors.text} />
+            </TouchableOpacity>
         </TouchableOpacity>
     );
 
@@ -159,6 +238,11 @@ const getStyles = (myColors) => StyleSheet.create({
         fontSize: 16,
         color: myColors.text,
         marginTop: 5,
+    },
+    shareButton: {
+        backgroundColor: myColors.clickable,
+        padding: 10,
+        borderRadius: 8,
     },
     loader: {
         marginTop: 20,
