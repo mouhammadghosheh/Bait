@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image, SafeAreaView, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image, SafeAreaView } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
@@ -8,11 +8,13 @@ import AddToCartAnimation from '../Components/AddToCartAnimation';
 import { myColors as color } from '../Utils/MyColors';
 import { ThemeContext } from "../../contexts/ThemeContext";
 import ProductServices from "../../Services/ProductServices";
+import Popup from "../Components/PopUp";
 
 const CategoryProducts = () => {
     const [theme] = useContext(ThemeContext);
     const myColors = color[theme.mode];
     const styles = getStyles(myColors);
+    const [selectedItem, setSelectedItem] = useState(null);  // State for selected item
 
     const route = useRoute();
     const navigation = useNavigation();
@@ -33,7 +35,7 @@ const CategoryProducts = () => {
     }, [categoryName]);
 
     const renderProductItem = ({ item }) => (
-        <TouchableOpacity  disabled={!item.Stock}>
+        <TouchableOpacity onPress={() => setSelectedItem(item)} disabled={!item.Stock}>
             <View style={styles.productItem}>
                 <Image source={{ uri: item.Image }} style={item.Stock ? styles.image : styles.outOfStockImage} />
                 <View style={styles.productDetails}>
@@ -68,8 +70,6 @@ const CategoryProducts = () => {
         </TouchableOpacity>
     );
 
-
-
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.contentContainer}>
@@ -88,6 +88,13 @@ const CategoryProducts = () => {
                     showsVerticalScrollIndicator={false}
                 />
                 {showAnimation && <AddToCartAnimation itemName={itemNameForAnimation} />}
+                {selectedItem && (
+                    <Popup
+                        item={selectedItem}
+                        isVisible={Boolean(selectedItem)}
+                        onClose={() => setSelectedItem(null)}
+                    />
+                )}
             </View>
         </SafeAreaView>
     );

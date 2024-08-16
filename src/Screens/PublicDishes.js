@@ -20,13 +20,13 @@ import Logo from "../Components/Logo";
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesome } from '@expo/vector-icons';
 import { useUser } from "../../contexts/UserContext";
-import {Picker} from "@react-native-picker/picker";
 
 const PublicDishes = () => {
     const [publicDishes, setPublicDishes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [sortOption, setSortOption] = useState('likes');
+    const [menuVisible, setMenuVisible] = useState(false);
     const [theme] = useContext(ThemeContext);
     const { user } = useUser();
     const navigation = useNavigation();
@@ -48,7 +48,6 @@ const PublicDishes = () => {
                     ...data,
                 };
 
-                // Check if the current user has liked this dish
                 if (auth.currentUser) {
                     const docSnap = await getDoc(doc.ref);
                     const dish = docSnap.data();
@@ -60,7 +59,6 @@ const PublicDishes = () => {
                 return dishData;
             }));
 
-            // Sort the dishes based on the selected sort option
             dishes.sort((a, b) => {
                 if (sortOption === 'likes') {
                     return (b.likes?.length || 0) - (a.likes?.length || 0);
@@ -80,7 +78,7 @@ const PublicDishes = () => {
 
     useEffect(() => {
         fetchPublicDishes();
-    }, [sortOption]); // Fetch dishes again when the sort option changes
+    }, [sortOption]);
 
     const handleLikeDish = async (dishId) => {
         if (!auth.currentUser) {
@@ -105,20 +103,16 @@ const PublicDishes = () => {
 
             const isLiked = dishData.likes.includes(auth.currentUser.uid);
 
-            // Toggle like status
             if (isLiked) {
-                // Unlike the dish
                 await updateDoc(dishRef, {
                     likes: dishData.likes.filter(uid => uid !== auth.currentUser.uid)
                 });
             } else {
-                // Like the dish
                 await updateDoc(dishRef, {
                     likes: arrayUnion(auth.currentUser.uid)
                 });
             }
 
-            // Update the local state immediately
             setPublicDishes(prevDishes => prevDishes.map(dish =>
                 dish.id === dishId
                     ? { ...dish, isLiked: !isLiked, likes: isLiked ? dish.likes.filter(uid => uid !== auth.currentUser.uid) : [...dish.likes, auth.currentUser.uid] }
@@ -189,7 +183,7 @@ const PublicDishes = () => {
             const dishRef = doc(db, 'PublicDishes', dishId);
             const commentData = {
                 text: comment,
-                user: user.name || "Anonymous" // Assuming displayName holds the user's name
+                user: user.name || "Anonymous"
             };
             await updateDoc(dishRef, {
                 comments: arrayUnion(commentData)
@@ -235,28 +229,43 @@ const PublicDishes = () => {
             <Logo />
             <Text style={styles.heading}>Public Dishes</Text>
 
-            {/* Sorting Options */}
             <View style={styles.sortContainer}>
-                <Text style={styles.sortLabel}>Sort by:</Text>
-                <Picker
-                    selectedValue={sortOption}
-                    style={styles.picker}
-                    onValueChange={(itemValue) => setSortOption(itemValue)}
+                <TouchableOpacity
+                    style={styles.sortButton}
+                    onPress={() => setMenuVisible(!menuVisible)}
                 >
-                    <Picker.Item label="Likes" value="likes" />
-                    <Picker.Item label="Reviews" value="reviews" />
-                </Picker>
+                    <Text style={styles.sortLabel}>Sort by: {sortOption}</Text>
+                    <FontAwesome name={menuVisible ? 'chevron-up' : 'chevron-down'} size={16} color={myColors.text} />
+                </TouchableOpacity>
+                {menuVisible && (
+                    <View style={styles.sortMenu}>
+                        <TouchableOpacity
+                            style={styles.sortMenuItem}
+                            onPress={() => {
+                                setSortOption('likes');
+                                setMenuVisible(false);
+                            }}
+                        >
+                            <Text style={styles.sortMenuItemText}>Likes</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.sortMenuItem}
+                            onPress={() => {
+                                setSortOption('reviews');
+                                setMenuVisible(false);
+                            }}
+                        >
+                            <Text style={styles.sortMenuItemText}>Reviews</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
             </View>
 
             <FlatList
                 data={publicDishes}
-                keyExtractor={(item) => item.id}
                 renderItem={renderItem}
-                ListEmptyComponent={() => (
-                    <View style={styles.emptyContainer}>
-                        <Text style={styles.emptyText}>No public dishes available.</Text>
-                    </View>
-                )}
+                keyExtractor={(item) => item.id}
+                contentContainerStyle={styles.listContentContainer}
             />
         </SafeAreaView>
     );
@@ -267,123 +276,133 @@ const getStyles = (myColors) => StyleSheet.create({
         flex: 1,
         paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
         backgroundColor: myColors.primary,
-        paddingHorizontal: 16,
+    },
+    loader: {
+        marginTop: 20,
+    },
+    errorText: {
+        textAlign: 'center',
+        color: myColors.text,
+        fontSize: 18,
     },
     heading: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: myColors.text,
-        marginBottom: 20,
         textAlign: 'center',
+        marginBottom: 16,
+        color: myColors.text,
+    },
+    sortContainer: {
+        marginHorizontal: 16,
+        marginBottom: 8,
+    },
+    sortButton: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: 8,
+        borderRadius: 8,
+        backgroundColor: myColors.secondary,
+    },
+    sortLabel: {
+        color: myColors.text,
+        fontSize: 16,
+    },
+    sortMenu: {
+        backgroundColor: myColors.secondary,
+        borderRadius: 8,
+        marginTop: 8,
+    },
+    sortMenuItem: {
+        padding: 8,
+    },
+    sortMenuItemText: {
+        color: myColors.text,
+        fontSize: 16,
+    },
+    listContentContainer: {
+        paddingHorizontal: 16,
     },
     dishItem: {
-        backgroundColor: myColors.secondary,
-        padding: 16,
+        marginBottom: 16,
         borderRadius: 8,
-        marginBottom: 10,
+        backgroundColor: myColors.secondary,
+        overflow: 'hidden',
+        elevation: 3,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.8,
+        shadowRadius: 2,
     },
     dishImage: {
         width: '100%',
         height: 200,
-        borderRadius: 8,
-        resizeMode: 'cover',
     },
     dishTextContainer: {
-        marginTop: 10,
+        padding: 12,
     },
     dishName: {
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: 'bold',
         color: myColors.text,
+        marginBottom: 4,
     },
     dishSteps: {
-        fontSize: 14,
+        fontSize: 16,
         color: myColors.text,
-        marginTop: 5,
+        marginBottom: 8,
     },
     likeButton: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginTop: 10,
     },
     likeCount: {
         fontSize: 16,
+        marginLeft: 8,
         color: myColors.text,
-        marginLeft: 5,
     },
     commentContainer: {
-        marginTop: 10,
+        padding: 12,
     },
     commentTitle: {
         fontSize: 16,
         fontWeight: 'bold',
+        marginBottom: 4,
         color: myColors.text,
     },
     commentText: {
         fontSize: 14,
         color: myColors.text,
-        marginTop: 5,
-    },
-    commentUser: {
-        fontWeight: 'bold',
+        marginBottom: 4,
     },
     noComments: {
         fontSize: 14,
         color: myColors.text,
-        marginTop: 5,
+        marginBottom: 8,
     },
     commentInput: {
-        borderColor: myColors.border,
-        borderWidth: 1,
-        borderRadius: 4,
+        fontSize: 16,
         padding: 8,
-        marginTop: 10,
+        borderRadius: 8,
+        backgroundColor: myColors.secondary,
         color: myColors.text,
     },
     reviewContainer: {
-        marginTop: 10,
+        padding: 12,
+        flexDirection: 'row',
+        alignItems: 'center',
     },
     reviewTitle: {
         fontSize: 16,
         fontWeight: 'bold',
+        marginRight: 8,
         color: myColors.text,
     },
     starContainer: {
         flexDirection: 'row',
-        marginTop: 5,
     },
-    loader: {
-        marginTop: 20,
-    },
-    emptyContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    emptyText: {
-        fontSize: 16,
-        color: myColors.text,
-    },
-    errorText: {
-        fontSize: 16,
-        color: 'red',
-        textAlign: 'center',
-    },
-    sortContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'flex-end',
-        marginBottom: 10,
-    },
-    sortLabel: {
-        fontSize: 16,
-        color: myColors.text,
-        marginRight: 10,
-    },
-    picker: {
-        height: 50,
-        width: 150,
-        color: myColors.text,
+    commentUser: {
+        fontWeight: 'bold',
     },
 });
 
