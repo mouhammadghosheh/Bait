@@ -9,7 +9,6 @@ import { ThemeContext } from "../../contexts/ThemeContext";
 import ProductServices from "../../Services/ProductServices";
 import getRecommendations from "../../Services/getUserPurchasedItems";
 import HomeIcon from "../Components/HomeIcon";
-import Logo from "../Components/Logo";
 
 // Memoized components for better performance
 const MemoizedIndividualProductCarousel = React.memo(IndividualProductCarousel);
