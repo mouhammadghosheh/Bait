@@ -138,32 +138,34 @@ export default function CheckoutScreen() {
     function renderContent() {
         return (
             <ScrollView>
-                <View style={{ backgroundColor: myColors.primary, padding: 10 }}>
+                <View style={{ backgroundColor: myColors.popup, padding: 10 }}>
                     {location && (
                         <View>
                             <Text style={styles.locationText}>
                                 Your Location:
                             </Text>
-                            <MapView
-                                customMapStyle={isDarkMode ? mapStyle : null}
-                                style={styles.map}
-                                provider={Platform.OS === 'android' ? PROVIDER_GOOGLE : PROVIDER_DEFAULT}
-                                initialRegion={{
-                                    latitude: location.latitude,
-                                    longitude: location.longitude,
-                                    latitudeDelta: 0.01,
-                                    longitudeDelta: 0.01,
-                                }}
-                            >
-                                <Marker
-                                    coordinate={{
+                            <View style={styles.mapCard}>
+                                <MapView
+                                    customMapStyle={isDarkMode ? mapStyle : null}
+                                    style={styles.map}
+                                    provider={Platform.OS === 'android' ? PROVIDER_GOOGLE : PROVIDER_DEFAULT}
+                                    initialRegion={{
                                         latitude: location.latitude,
                                         longitude: location.longitude,
+                                        latitudeDelta: 0.01,
+                                        longitudeDelta: 0.01,
                                     }}
-                                    title="Your Location"
-                                    description="This is your current location"
-                                />
-                            </MapView>
+                                >
+                                    <Marker
+                                        coordinate={{
+                                            latitude: location.latitude,
+                                            longitude: location.longitude,
+                                        }}
+                                        title="Your Location"
+                                        description="This is your current location"
+                                    />
+                                </MapView>
+                            </View>
                             <View>
                                 <Text style={styles.label}>City Name</Text>
                                 <TextInput
@@ -209,6 +211,7 @@ export default function CheckoutScreen() {
                                 style={[styles.input, { marginBottom: 40, height: 100 }]}
                                 mode="outlined"
                                 multiline
+
                                 numberOfLines={3}
                                 placeholderTextColor={myColors.placeholder}
                                 onChangeText={(text) => handleInputChange('notesToDriver', text)}
@@ -227,7 +230,6 @@ export default function CheckoutScreen() {
                                 Close
                             </AwesomeButton>
                         </View>
-
                     )}
                 </View>
             </ScrollView>
@@ -263,7 +265,7 @@ export default function CheckoutScreen() {
                         ]}
                         onPress={() => handleDeliveryOptionSelect('today')}
                     >
-                        <Icon name="truck" size={24} color={myColors.text} />
+                        <Icon name="truck" size={30} color={myColors.cardPlaceholder} />
                         <Text style={styles.highlightButtonText}>Deliver Today</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -273,22 +275,25 @@ export default function CheckoutScreen() {
                         ]}
                         onPress={() => handleDeliveryOptionSelect('schedule')}
                     >
-                        <Icon name="calendar" size={24} color={myColors.text} />
+                        <Icon name="calendar" size={24} color={myColors.cardPlaceholder} />
                         <Text style={styles.highlightButtonText}>Schedule</Text>
                     </TouchableOpacity>
                 </View>
                 {/* Date Picker */}
                 {showDatePicker && (
-                    <DateTimePicker
-                        testID="dateTimePicker"
-                        value={selectedDate || new Date()} // Use selectedDate or today's date
-                        mode="date"
-                        is24Hour={true}
-                        display={Platform.OS === 'ios' ? 'inline' : 'default'}
-                        minimumDate={new Date()} // Set minimum date to today
-                        onChange={handleDateChange}
-                    />
+                    <View style={styles.datePickerCard}>
+                        <DateTimePicker
+                            testID="dateTimePicker"
+                            value={selectedDate || new Date()} // Use selectedDate or today's date
+                            mode="date"
+                            is24Hour={true}
+                            display={Platform.OS === 'ios' ? 'inline' : 'default'}
+                            minimumDate={new Date()} // Set minimum date to today
+                            onChange={handleDateChange}
+                        />
+                    </View>
                 )}
+
                 {/* Render selectedDate if exists */}
                 {selectedDate && (
                     <Text style={styles.selectedDateText}>
@@ -305,7 +310,7 @@ export default function CheckoutScreen() {
                         ]}
                         onPress={() => handlePayment('Cash')}
                     >
-                        <Icon name="cash" size={30} color={myColors.text} />
+                        <Icon name="cash" size={30} color={myColors.cardPlaceholder} />
                         <Text style={styles.highlightButtonText}>Cash</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -315,7 +320,7 @@ export default function CheckoutScreen() {
                         ]}
                         onPress={() => handlePayment('Card')}
                     >
-                        <Icon name="credit-card" size={30} color={myColors.text} />
+                        <Icon name="credit-card" size={30} color={myColors.cardPlaceholder} />
                         <Text style={styles.highlightButtonText}>Card</Text>
                     </TouchableOpacity>
                 </View>
@@ -341,10 +346,13 @@ export default function CheckoutScreen() {
                 index={sheetIndex}
                 snapPoints={snapPoints}
                 enablePanDownToClose={true}
+                backgroundStyle={{ backgroundColor: myColors.popup,borderColor:myColors.border,borderWidth:1 }} // Set background color of the bottom sheet
                 onChange={(index) => setSheetIndex(index)}
+                handleIndicatorStyle = {{backgroundColor:myColors.text}}
             >
                 {renderContent()}
             </BottomSheet>
+
         </SafeAreaView>
     );
 }
@@ -360,12 +368,14 @@ const GetStyles = (myColors) => StyleSheet.create({
     },
     container: {
         padding: 20,
+
     },
     header: {
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 20,
-        color: myColors.text
+        color: myColors.text,
+        textAlign: "center"
     },
     input: {
         marginBottom: 10,
@@ -375,7 +385,8 @@ const GetStyles = (myColors) => StyleSheet.create({
         fontSize: 20,
         marginTop: 20,
         marginBottom: 10,
-        color: myColors.text
+        color: myColors.text,
+        fontWeight: 'bold',
     },
     deliveryContainer: {
         flexDirection: 'row',
@@ -393,7 +404,7 @@ const GetStyles = (myColors) => StyleSheet.create({
     highlightButtonText: {
         marginTop: 10,
         fontSize: 16,
-        color: myColors.text
+        color: myColors.cardPlaceholder,
     },
     button: {
         marginTop: 20,
@@ -404,7 +415,8 @@ const GetStyles = (myColors) => StyleSheet.create({
     },
     buttonText: {
         fontSize: 18,
-        color: myColors.text
+        color: myColors.cardPlaceholder,
+        fontWeight: 'bold',
     },
     locationText: {
         marginTop: 10,
@@ -420,13 +432,10 @@ const GetStyles = (myColors) => StyleSheet.create({
     map: {
         width: '100%',
         height: 200,
-        marginTop: 10,
-        marginBottom: 30,
-        padding: 150,
     },
     label: {
         marginBottom: 10,
-        color: myColors.text
+        color: myColors.text,
     },
     horiz: {
         flexDirection: 'row',
@@ -437,6 +446,28 @@ const GetStyles = (myColors) => StyleSheet.create({
         flex: 1,
         marginHorizontal: 5,
     },
+    datePickerCard: {
+        backgroundColor: myColors.cardContainer, // Use card background color
+        borderRadius: 10,
+        padding: 15,
+        shadowColor: myColors.text, // Add shadow for iOS
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 8, // Add shadow for Android
+        marginTop: 15,
+    },
+    mapCard: {
+        backgroundColor: myColors.cardContainer,
+        borderRadius: 10,
+        padding: 10,
+        shadowColor: myColors.shadowColor, // Add shadow for iOS
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3, // Add shadow for Android
+        marginBottom: 20,
+    }
 });
 
 

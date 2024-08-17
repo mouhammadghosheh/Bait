@@ -130,7 +130,7 @@ const stepIndicatorStyles = (myColors) => ({
     currentStepStrokeWidth: 5,
     stepStrokeCurrentColor: myColors.clickable,
     stepIndicatorCurrentColor: myColors.clickable,
-    stepIndicatorLabelCurrentColor: myColors.text,
+    stepIndicatorLabelCurrentColor: 'white',
     labelSize: 16,
     currentStepIndicatorLabelFontSize: 19,
     labelColor: myColors.text,
@@ -159,7 +159,8 @@ const getStyles = (myColors) => StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center',
         marginVertical: 20,
-        color: myColors.text
+        color: myColors.text,
+
     },
     ing: {
         marginVertical: 8,
@@ -167,7 +168,17 @@ const getStyles = (myColors) => StyleSheet.create({
         borderRadius: 10,
         alignItems: 'center',
         borderWidth: 0.5,
-        borderColor: myColors.text
+        borderColor: myColors.text,
+        backgroundColor: myColors.cardContainer,
+        shadowColor: myColors.text,
+        shadowOffset: {
+            width: 3,
+            height: 4,
+        },
+        shadowOpacity: 0.17,
+        shadowRadius: 4,
+        // Add shadow for Android
+        elevation: 3,
     },
     item: {
         flexDirection: 'row',
@@ -176,8 +187,17 @@ const getStyles = (myColors) => StyleSheet.create({
         marginVertical: 8,
         marginHorizontal: 16,
         borderRadius: 10,
-        borderBottomWidth: 1,
-        borderColor: myColors.text
+        borderColor: myColors.border,
+        backgroundColor: myColors.cardContainer,
+        shadowColor: myColors.text,
+        shadowOffset: {
+            width: 3,
+            height: 4,
+        },
+        shadowOpacity: 0.17,
+        shadowRadius: 4,
+        // Add shadow for Android
+        elevation: 3,
     },
     title: {
         fontSize: 16,

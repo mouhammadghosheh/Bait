@@ -103,7 +103,7 @@ const getStyles = (myColors) => StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 22,
+        marginBottom: 90,
     },
     image: {
         width: 200,
@@ -119,13 +119,13 @@ const getStyles = (myColors) => StyleSheet.create({
         borderRadius: 20,
         padding: 25,
         alignItems: 'center',
-        shadowColor: '#000',
+        shadowColor: myColors.text,
         shadowOffset: {
             width: 0,
             height: 2,
         },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
+        shadowOpacity: 0.5,
+        shadowRadius: 7,
         elevation: 5,
     },
     quantityContainer: {

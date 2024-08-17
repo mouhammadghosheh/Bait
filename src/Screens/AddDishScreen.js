@@ -1,9 +1,12 @@
-import React, { useContext, useState } from 'react';
-import { SafeAreaView, StyleSheet, View, TextInput, TouchableOpacity, Text, FlatList, Image, Alert } from 'react-native';
+import React, { useContext, useState, useMemo } from 'react';
+import { SafeAreaView, StyleSheet, View, TextInput, TouchableOpacity, Text, FlatList, Image, Alert, Dimensions } from 'react-native';
 import { useProducts } from "../../contexts/ProductContext";
 import { myColors as color } from "../Utils/MyColors";
 import { ThemeContext } from "../../contexts/ThemeContext";
 import * as ImagePicker from 'expo-image-picker';
+import Logo from "../Components/Logo";
+
+const { width } = Dimensions.get('window');
 
 const AddDishScreen = ({ navigation }) => {
     const { products } = useProducts();
@@ -84,7 +87,6 @@ const AddDishScreen = ({ navigation }) => {
         });
     };
 
-
     const pickImage = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== 'granted') {
@@ -123,8 +125,10 @@ const AddDishScreen = ({ navigation }) => {
         product.Name.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    return (
-        <SafeAreaView style={styles.safe}>
+    // Memoize the header component to prevent re-renders
+    const renderHeader = useMemo(() => (
+        <View>
+            <Logo width={80} height={80} />
             <TextInput
                 style={styles.input}
                 placeholder="Dish Name"
@@ -138,7 +142,7 @@ const AddDishScreen = ({ navigation }) => {
             <TouchableOpacity style={styles.imagePickerButton} onPress={takePhoto}>
                 <Text style={styles.imagePickerText}>Take a Photo</Text>
             </TouchableOpacity>
-            {dishImage ? <Text style={styles.PickDish}>Image Picked Successfully</Text>: <Text style={styles.PickDish}>Image Not Picked Yet</Text>}
+            {dishImage ? <Text style={styles.PickDish}>Image Picked Successfully</Text> : <Text style={styles.PickDish}>Image Not Picked Yet</Text>}
             <TextInput
                 style={styles.searchInput}
                 placeholder="Search Ingredients"
@@ -146,9 +150,17 @@ const AddDishScreen = ({ navigation }) => {
                 value={searchQuery}
                 onChangeText={setSearchQuery}
             />
+        </View>
+    ), [dishName, searchQuery, dishImage]); // Only re-render if dishName, searchQuery, or dishImage changes
+
+    return (
+        <SafeAreaView style={styles.safe}>
             <FlatList
                 data={filteredProducts}
                 keyExtractor={(item) => item.ID}
+                ListHeaderComponent={renderHeader} // Render the header with other inputs
+                numColumns={3} // Set 3 items per row
+                columnWrapperStyle={styles.columnWrapper} // Adjust space between columns
                 renderItem={({ item }) => (
                     <View style={styles.productItem}>
                         <TouchableOpacity onPress={() => toggleIngredientSelection(item)}>
@@ -177,6 +189,7 @@ const AddDishScreen = ({ navigation }) => {
                         )}
                     </View>
                 )}
+                contentContainerStyle={{ paddingBottom: 20 }}
             />
             <TouchableOpacity style={styles.saveButton} onPress={handleProceedToSteps}>
                 <Text style={styles.saveButtonText}>Next</Text>
@@ -193,22 +206,33 @@ const getStyles = (myColors) => StyleSheet.create({
         paddingVertical: 20,
     },
     input: {
+        margin: 15,
         borderWidth: 1,
         borderColor: myColors.text,
-        padding: 10,
+        padding: 15,
         borderRadius: 8,
         marginBottom: 20,
         color: myColors.text,
     },
     imagePickerButton: {
-        backgroundColor: myColors.secondary,
+        backgroundColor: myColors.clickable,
         padding: 10,
+        margin: 15,
+        marginBottom: 1,
         borderRadius: 8,
         alignItems: 'center',
-        marginBottom: 10,
+        shadowColor: myColors.text,
+        shadowOffset: {
+            width: 3,
+            height: 4,
+        },
+        shadowOpacity: 0.17,
+        shadowRadius: 4,
+        // Add shadow for Android
+        elevation: 3,
     },
     imagePickerText: {
-        color: myColors.text,
+        color: 'white',
         fontSize: 18,
     },
     dishImage: {
@@ -217,45 +241,66 @@ const getStyles = (myColors) => StyleSheet.create({
         borderRadius: 8,
         marginBottom: 20,
     },
+    columnWrapper: {
+        justifyContent: 'space-around', // Ensure even spacing between columns
+    },
     productItem: {
-        marginBottom: 10,
+        backgroundColor: myColors.cardContainer,
+        borderColor: myColors.border,
+        borderWidth: 1,
+        borderRadius: 10,
+        padding: 8,
+        width: (width / 3) - 20, // Adjust card width to fit three columns
+        marginBottom: 0.5,
+        margin:15,
+        shadowColor: myColors.text,
+        shadowOffset: {
+            width: 3,
+            height: 4,
+        },
+        shadowOpacity: 0.17,
+        shadowRadius: 4,
+        // Add shadow for Android
+        elevation: 3,
+
     },
     productContent: {
-        flexDirection: 'row',
         alignItems: 'center',
     },
     productImage: {
-        width: 50,
-        height: 50,
+        width: 70,
+        height: 70,
         borderRadius: 8,
-        marginRight: 10,
+        marginBottom: 10,
     },
     productName: {
-        fontSize: 18,
+        fontSize: 14, // Adjust font size
         color: myColors.text,
+        textAlign: 'center',
     },
     quantityContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         marginTop: 5,
+        justifyContent: 'center',
     },
     quantityButton: {
         backgroundColor: myColors.secondary,
-        padding: 10,
+        padding: 5,
         borderRadius: 5,
         marginHorizontal: 5,
         alignItems: 'center',
     },
     quantityButtonText: {
-        fontSize: 18,
+        fontSize: 16,
         color: myColors.text,
     },
     quantityInput: {
         borderWidth: 1,
         borderColor: myColors.text,
-        padding: 8,
+        padding: 5,
         borderRadius: 5,
-        width: 60,
+        width: 40,
         textAlign: 'center',
         color: myColors.text,
     },
@@ -264,26 +309,37 @@ const getStyles = (myColors) => StyleSheet.create({
         padding: 16,
         borderRadius: 8,
         alignItems: 'center',
-        marginTop: 20,
+        margin : 15,
+        shadowColor: myColors.text,
+        shadowOffset: {
+            width: 3,
+            height: 4,
+        },
+        shadowOpacity: 0.17,
+        shadowRadius: 4,
+        // Add shadow for Android
+        elevation: 3,
     },
     saveButtonText: {
-        color: myColors.text,
+        color: 'white',
         fontSize: 20,
         fontWeight: 'bold',
     },
     searchInput: {
         borderWidth: 1,
         borderColor: myColors.text,
-        padding: 10,
+        padding: 15,
         borderRadius: 8,
-        marginBottom: 10,
+        marginBottom: 15,
         color: myColors.text,
+        margin: 15
     },
     PickDish: {
         textAlign: "center",
         color: myColors.placeholder,
         fontSize: 15,
-        marginBottom: 5
+        marginBottom: 8,
+        marginTop: 8
     },
 });
 

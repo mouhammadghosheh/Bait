@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import {
     View,
     Text,
@@ -11,6 +11,7 @@ import {
     StatusBar,
     TouchableOpacity,
     TextInput,
+    Animated,
 } from 'react-native';
 import { collection, getDocs, updateDoc, doc, arrayUnion, getDoc } from 'firebase/firestore';
 import { authentication, db } from '../../Firebaseconfig';
@@ -27,6 +28,8 @@ const PublicDishes = () => {
     const [error, setError] = useState(null);
     const [sortOption, setSortOption] = useState('likes');
     const [menuVisible, setMenuVisible] = useState(false);
+    const [expandedItems, setExpandedItems] = useState({}); // Track expanded state
+    const [showAllComments, setShowAllComments] = useState({}); // Track which items are showing all comments
     const [theme] = useContext(ThemeContext);
     const { user } = useUser();
     const navigation = useNavigation();
@@ -123,61 +126,6 @@ const PublicDishes = () => {
         }
     };
 
-    const renderItem = ({ item }) => (
-        <TouchableOpacity style={styles.dishItem} onPress={() => navigation.navigate('DishDetails', { dish: item })}>
-            {item.Image && (
-                <Image source={{ uri: item.Image }} style={styles.dishImage} />
-            )}
-            <View style={styles.dishTextContainer}>
-                <Text style={styles.dishName}>{item.Name}</Text>
-                <Text style={styles.dishSteps}>
-                    Made By: {item.User}
-                </Text>
-                <TouchableOpacity
-                    style={styles.likeButton}
-                    onPress={() => handleLikeDish(item.id)}
-                >
-                    <FontAwesome name="heart" size={24} color={item.isLiked ? 'red' : myColors.text} />
-                    <Text style={styles.likeCount}>{item.likes?.length || 0}</Text>
-                </TouchableOpacity>
-            </View>
-
-            <View style={styles.commentContainer}>
-                <Text style={styles.commentTitle}>Comments</Text>
-                {item.comments?.length > 0 ? (
-                    item.comments.map((comment, index) => (
-                        <Text key={index} style={styles.commentText}>
-                            <Text style={styles.commentUser}>{comment.user}:</Text> {comment.text}
-                        </Text>
-                    ))
-                ) : (
-                    <Text style={styles.noComments}>No comments yet.</Text>
-                )}
-                <TextInput
-                    style={styles.commentInput}
-                    placeholder="Add a comment"
-                    placeholderTextColor={myColors.placeholder}
-                    onSubmitEditing={(e) => handleCommentDish(item.id, e.nativeEvent.text)}
-                />
-            </View>
-
-            <View style={styles.reviewContainer}>
-                <Text style={styles.reviewTitle}>Review</Text>
-                <View style={styles.starContainer}>
-                    {[...Array(5)].map((_, index) => (
-                        <FontAwesome
-                            key={index}
-                            name={index < item.rating ? 'star' : 'star-o'}
-                            size={24}
-                            color={myColors.text}
-                            onPress={() => handleRatingDish(item.id, index + 1)}
-                        />
-                    ))}
-                </View>
-            </View>
-        </TouchableOpacity>
-    );
-
     const handleCommentDish = async (dishId, comment) => {
         try {
             const dishRef = doc(db, 'PublicDishes', dishId);
@@ -206,10 +154,111 @@ const PublicDishes = () => {
         }
     };
 
+    const animatedHeights = useRef({}).current;
+
+    const handleToggleExpand = (id) => {
+        if (!expandedItems[id]) {
+            animatedHeights[id] = new Animated.Value(0);
+        }
+
+        setExpandedItems(prevState => ({
+            ...prevState,
+            [id]: !prevState[id],
+        }));
+
+        Animated.timing(animatedHeights[id], {
+            toValue: expandedItems[id] ? 0 : 1, // Expand or collapse
+            duration: 300,
+            useNativeDriver: false, // Height is non-layout property
+        }).start();
+    };
+
+    const toggleShowAllComments = (id) => {
+        setShowAllComments(prevState => ({
+            ...prevState,
+            [id]: !prevState[id],
+        }));
+    };
+
+    const renderItem = ({ item }) => {
+        const heightAnimation = animatedHeights[item.id]?.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, expandedItems[item.id] ? 180 + (showAllComments[item.id] ? item.comments?.length * 30 : 90) : 220], // Adjust based on content height
+        });
+
+        const displayedComments = showAllComments[item.id] ? item.comments : item.comments?.slice(0, 3); // Show only first 3 comments if collapsed
+
+        return (
+            <View style={styles.dishItem}>
+                <TouchableOpacity onPress={() => handleToggleExpand(item.id)}>
+                    <Image source={{ uri: item.Image }} style={styles.dishImage} />
+                    <View style={styles.dishTextContainer}>
+                        <Text style={styles.dishName}>{item.Name}</Text>
+                        <Text style={styles.dishSteps}>Made By: {item.User}</Text>
+                        <TouchableOpacity
+                            style={styles.likeButton}
+                            onPress={() => handleLikeDish(item.id)}
+                        >
+                            <FontAwesome name="heart" size={30} color={item.isLiked ? 'red' : myColors.text} />
+                            <Text style={styles.likeCount}>{item.likes?.length || 0}</Text>
+                        </TouchableOpacity>
+                    </View>
+                </TouchableOpacity>
+                <Animated.View style={[styles.collapsibleContent, { height: heightAnimation }]}>
+                    {expandedItems[item.id] && (
+                        <>
+                            <TouchableOpacity
+                                style={styles.detailsButton}
+                                onPress={() => navigation.navigate('DishDetails', { dish: item })}
+                            >
+                                <Text style={styles.detailsButtonText}>View Dish Details</Text>
+                            </TouchableOpacity>
+                            <View style={styles.commentContainer}>
+                                <Text style={styles.commentTitle}>Comments:</Text>
+                                {displayedComments?.map((comment, index) => (
+                                    <Text key={index} style={styles.commentText}>
+                                        <Text style={styles.commentUser}>{comment.user}:</Text> {comment.text}
+                                    </Text>
+                                ))}
+                                {item.comments?.length > 3 && (
+                                    <TouchableOpacity onPress={() => toggleShowAllComments(item.id)}>
+                                        <Text style={styles.showAllCommentsText}>
+                                            {showAllComments[item.id] ? "Show Less Comments" : "Show All Comments"}
+                                        </Text>
+                                    </TouchableOpacity>
+                                )}
+                                <TextInput
+                                    style={styles.commentInput}
+                                    placeholder="Add a comment"
+                                    placeholderTextColor={myColors.placeholder}
+                                    onSubmitEditing={(e) => handleCommentDish(item.id, e.nativeEvent.text)}
+                                />
+                            </View>
+                            <View style={styles.reviewContainer}>
+                                <Text style={styles.reviewTitle}>Review</Text>
+                                <View style={styles.starContainer}>
+                                    {[...Array(5)].map((_, index) => (
+                                        <FontAwesome
+                                            key={index}
+                                            name={index < item.rating ? 'star' : 'star-o'}
+                                            size={24}
+                                            color={myColors.text}
+                                            onPress={() => handleRatingDish(item.id, index + 1)}
+                                        />
+                                    ))}
+                                </View>
+                            </View>
+                        </>
+                    )}
+                </Animated.View>
+            </View>
+        );
+    };
+
     if (loading) {
         return (
             <SafeAreaView style={styles.safe}>
-                <Logo />
+                <Logo height={120} width={120} />
                 <ActivityIndicator size="large" color={myColors.text} style={styles.loader} />
             </SafeAreaView>
         );
@@ -218,7 +267,7 @@ const PublicDishes = () => {
     if (error) {
         return (
             <SafeAreaView style={styles.safe}>
-                <Logo />
+                <Logo height={120} width={120} />
                 <Text style={styles.errorText}>{error}</Text>
             </SafeAreaView>
         );
@@ -226,7 +275,7 @@ const PublicDishes = () => {
 
     return (
         <SafeAreaView style={styles.safe}>
-            <Logo />
+            <Logo height={120} width={120} />
             <Text style={styles.heading}>Public Dishes</Text>
 
             <View style={styles.sortContainer}>
@@ -302,7 +351,7 @@ const getStyles = (myColors) => StyleSheet.create({
         alignItems: 'center',
         padding: 8,
         borderRadius: 8,
-        backgroundColor: myColors.secondary,
+        backgroundColor: myColors.searchBar,
     },
     sortLabel: {
         color: myColors.text,
@@ -326,54 +375,83 @@ const getStyles = (myColors) => StyleSheet.create({
     dishItem: {
         marginBottom: 16,
         borderRadius: 8,
-        backgroundColor: myColors.secondary,
-        overflow: 'hidden',
-        elevation: 3,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.8,
-        shadowRadius: 2,
+        backgroundColor: myColors.cardContainer,
+        shadowColor: myColors.text,
+        padding : 7,
+
+        shadowOffset: {
+            width: 3,
+            height: 5,
+        },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        elevation: 5,
     },
     dishImage: {
         width: '100%',
+        borderRadius: 8,
+
         height: 200,
+        resizeMode : "cover",
     },
     dishTextContainer: {
         padding: 12,
     },
     dishName: {
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: 'bold',
         color: myColors.text,
         marginBottom: 4,
     },
     dishSteps: {
-        fontSize: 16,
+        fontSize: 14,
         color: myColors.text,
         marginBottom: 8,
     },
     likeButton: {
         flexDirection: 'row',
         alignItems: 'center',
+       marginTop : 8
     },
     likeCount: {
-        fontSize: 16,
+        fontSize: 14,
         marginLeft: 8,
         color: myColors.text,
     },
-    commentContainer: {
+    collapsibleContent: {
         padding: 12,
+        overflow: 'hidden',
+    },
+    detailsButton: {
+        marginBottom: 12,
+        padding: 10,
+        backgroundColor: myColors.clickable,
+        borderRadius: 8,
+        alignItems: 'center',
+    },
+    detailsButtonText: {
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
+    commentContainer: {
+        marginBottom: 12,
     },
     commentTitle: {
         fontSize: 16,
         fontWeight: 'bold',
-        marginBottom: 4,
+        marginBottom: 8,
         color: myColors.text,
     },
     commentText: {
         fontSize: 14,
         color: myColors.text,
         marginBottom: 4,
+    },
+    showAllCommentsText: {
+        color: myColors.clickable,
+        fontSize: 14,
+        marginTop: 8,
     },
     noComments: {
         fontSize: 14,
@@ -384,11 +462,10 @@ const getStyles = (myColors) => StyleSheet.create({
         fontSize: 16,
         padding: 8,
         borderRadius: 8,
-        backgroundColor: myColors.secondary,
+        backgroundColor : myColors.searchBar,
         color: myColors.text,
     },
     reviewContainer: {
-        padding: 12,
         flexDirection: 'row',
         alignItems: 'center',
     },

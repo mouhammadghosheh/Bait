@@ -105,13 +105,24 @@ const getStyles = (myColors) => StyleSheet.create({
         marginHorizontal: 16,
         borderWidth: 1,
         borderRadius: 10,
-        borderColor: myColors.text,
+        borderColor: myColors.border,
+        backgroundColor: myColors.cardContainer,
+        shadowColor: myColors.text,
+        shadowOffset: {
+            width: 3,
+            height: 4,
+        },
+        shadowOpacity: 0.17,
+        shadowRadius: 4,
+        // Add shadow for Android
+        elevation: 3,
     },
     title: {
         paddingLeft: 40,
         fontSize: 24,
         fontWeight: 'bold',
         color: myColors.text,
+
     },
     regionImage: {
         width: 100,
@@ -122,9 +133,20 @@ const getStyles = (myColors) => StyleSheet.create({
     customCard: {
         margin: 16,
         padding: 16,
-        backgroundColor: myColors.secondary,
-        borderRadius: 10,
+        borderRadius : 10,
         alignItems: 'center',
+        borderWidth: 1,
+        borderColor: myColors.border,
+        backgroundColor: myColors.searchBar,
+        shadowColor: myColors.text,
+        shadowOffset: {
+            width: 3,
+            height: 4,
+        },
+        shadowOpacity: 0.17,
+        shadowRadius: 4,
+        // Add shadow for Android
+        elevation: 3,
     },
     customCardTitle: {
         fontSize: 20,
@@ -154,7 +176,7 @@ const getStyles = (myColors) => StyleSheet.create({
         marginBottom  : 10,
     },
     customCardButtonText: {
-        color: myColors.text,
+        color: 'white',
         fontWeight: 'bold',
         fontSize : 15,
     },

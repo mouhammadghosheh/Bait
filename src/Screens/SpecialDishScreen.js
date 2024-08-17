@@ -143,7 +143,7 @@ const SpecialDishScreen = () => {
                 </Text>
             </View>
             <TouchableOpacity onPress={() => handleShareDish(item)} style={styles.shareButton}>
-                <Icon name="share" size={24} color={myColors.text} />
+                <Icon name="share" size={24} color={'white'} />
             </TouchableOpacity>
         </TouchableOpacity>
     );
@@ -204,20 +204,41 @@ const getStyles = (myColors) => StyleSheet.create({
         padding: 16,
         borderRadius: 8,
         alignItems: 'center',
-        marginVertical: 20,
+        margin : 15,
+        shadowColor: myColors.text,
+        shadowOffset: {
+            width: 3,
+            height: 4,
+        },
+        shadowOpacity: 0.17,
+        shadowRadius: 4,
+        // Add shadow for Android
+        elevation: 3,
     },
     addButtonText: {
-        color: myColors.text,
+        color: 'white',
         fontSize: 18,
         fontWeight: 'bold',
     },
     dishItem: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: myColors.secondary,
         padding: 16,
         borderRadius: 8,
-        marginBottom: 10,
+        marginBottom: 1,
+        margin : 15,
+        borderWidth: 0.5,
+        borderColor: myColors.border,
+        backgroundColor: myColors.cardContainer,
+        shadowColor: myColors.text,
+        shadowOffset: {
+            width: 3,
+            height: 4,
+        },
+        shadowOpacity: 0.17,
+        shadowRadius: 4,
+        // Add shadow for Android
+        elevation: 3,
     },
     dishImage: {
         width: 60,

@@ -36,25 +36,25 @@ const Cart = () => {
             <FlatList
                 data={storeData.products}
                 bounces={true}
+                numColumns={3} // Three items per row
+                columnWrapperStyle={{ justifyContent: "flex-start" }} // Even spacing between columns
                 renderItem={({ item }) => (
                     <View style={styles.productContainer}>
                         <Image style={styles.image} source={{ uri: item.Image }} />
-                        <View style={styles.productInfo}>
-                            <Text style={styles.productName}>{item.Name}</Text>
-                            <View style={styles.quantityContainer}>
-                                <TouchableOpacity onPress={() => dispatch(decrementQuantity(item))}>
-                                    <AntDesign name="minus" size={24} color={myColors.text} />
-                                </TouchableOpacity>
-                                <Text style={styles.quantity}>{item.quantity} {item.Scale ? 'Kg' : ''}</Text>
-                                <TouchableOpacity onPress={() => dispatch(incrementQuantity(item))}>
-                                    <AntDesign name="plus" size={24} color={myColors.text} />
-                                </TouchableOpacity>
-                                <Text style={styles.price}>₪ {(item.quantity * item.Price).toFixed(2)}</Text>
-                                <TouchableOpacity onPress={() => dispatch(removeFromCart(item))}>
-                                    <AntDesign name="delete" size={24} color={myColors.text} />
-                                </TouchableOpacity>
-                            </View>
+                        <Text style={styles.productName}>{item.Name}</Text>
+                        <View style={styles.quantityContainer}>
+                            <TouchableOpacity onPress={() => dispatch(decrementQuantity(item))}>
+                                <AntDesign name="minus" size={20} color={myColors.text} />
+                            </TouchableOpacity>
+                            <Text style={styles.quantity}>{item.quantity} {item.Scale ? 'Kg' : ''}</Text>
+                            <TouchableOpacity onPress={() => dispatch(incrementQuantity(item))}>
+                                <AntDesign name="plus" size={20} color={myColors.text} />
+                            </TouchableOpacity>
                         </View>
+                        <Text style={styles.price}>₪ {(item.quantity * item.Price).toFixed(2)}</Text>
+                        <TouchableOpacity style={styles.deleteButton} onPress={() => dispatch(removeFromCart(item))}>
+                            <AntDesign name="delete" size={20} color={myColors.text} />
+                        </TouchableOpacity>
                     </View>
                 )}
                 keyExtractor={(item, index) => index.toString()}
@@ -92,45 +92,62 @@ const getStyles = (myColors) => StyleSheet.create({
         color: myColors.text,
     },
     productContainer: {
-        borderBottomWidth: 1,
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginVertical: 5,
-        paddingHorizontal: 10,
+        backgroundColor: myColors.cardContainer,
+        borderColor: myColors.border,
+        borderWidth: 1,
         borderRadius: 10,
-        borderBottomColor: myColors.text,
+        padding: 8,
+        width: '30%', // Adjusted width for three columns
+        marginBottom: 10,
+        marginRight: 1,
+        marginLeft: 10,
+        // Add shadow for iOS
+        shadowColor: myColors.text,
+        shadowOffset: {
+            width: 3,
+            height: 5,
+        },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        // Add shadow for Android
+        elevation: 8,
     },
     image: {
         resizeMode: 'contain',
-        margin: 10,
-        width: 80,
-        height: 80,
+        width: "100%",
+        height: 70, // Adjusted height to fit smaller cards
         borderRadius: 10,
-    },
-    productInfo: {
-        flex: 1,
-        marginLeft: 10,
+        marginBottom: 8,
     },
     productName: {
-        fontSize: 18,
+        fontSize: 14, // Adjusted font size
         fontWeight: 'bold',
         color: myColors.text,
+        textAlign: 'center',
+        marginBottom: 5,
     },
     quantityContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        marginTop: 5,
+        marginBottom: 8,
     },
     quantity: {
-        fontSize: 16,
+        fontSize: 14, // Adjusted font size
         fontWeight: 'bold',
         color: myColors.text,
+        textAlign: 'center',
     },
     price: {
-        fontSize: 16,
+        fontSize: 14, // Adjusted font size
         fontWeight: 'bold',
         color: myColors.text,
+        textAlign: 'center',
+        marginBottom: 8,
+    },
+    deleteButton: {
+        alignSelf: 'center',
+        marginTop: 5,
     },
     footer: {
         paddingHorizontal: 20,
@@ -142,6 +159,8 @@ const getStyles = (myColors) => StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 15,
         color: myColors.text,
+        textAlign: 'center',
+        marginTop: 10,
     },
 });
 

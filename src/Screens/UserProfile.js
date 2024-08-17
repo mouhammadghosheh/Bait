@@ -86,16 +86,19 @@ const UserProfile = () => {
                     <View style={styles.signOutButton}>
                         <AwesomeButton
                             backgroundColor='red'
-                            backgroundDarker={myColors.primary}
-                            width={windowWidth-40}
+                            width={windowWidth - 30}
                             borderRadius={14}
                             onPress={() => setTimeout(handleSignOut, 2000)} // Fix here
                             progress={true}
                             textSize={18}
+                            raiseLevel={0.1} // Adjust the shadow elevation level
+
+                            shadowColor={myColors.text} // Set the shadow color to match the theme
                         >
                             Sign Out
                         </AwesomeButton>
                     </View>
+
                 </View>
             </ScrollView>
         </SafeAreaView>
@@ -138,7 +141,16 @@ const getStyles = (myColors) => StyleSheet.create({
         marginBottom: 15,
         borderRadius: 10,
         alignItems: 'center',
-        backgroundColor: myColors.tertiary
+        backgroundColor: myColors.cardContainer,
+        shadowColor: myColors.text,
+        shadowOffset: {
+            width: 3,
+            height: 5,
+        },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        // Add shadow for Android
+        elevation: 8,
     },
     actionButtonText: {
         fontSize: 18,
@@ -150,6 +162,16 @@ const getStyles = (myColors) => StyleSheet.create({
         marginHorizontal: 20,
         marginTop: 50,
         borderRadius: 5,
+        shadowColor: myColors.text,
+
+        shadowOffset: {
+            width: 3,
+            height: 5,
+        },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        elevation: 8,
+
     },
     signOutButtonText: {
         fontWeight: '600',

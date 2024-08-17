@@ -47,7 +47,7 @@ const AllCategoriesCarousel = () => {
                 horizontal={true}
                 renderItem={renderProductItem}
                 keyExtractor={(item) => item.id}
-                showsVerticalScrollIndicator={false}
+                showsHorizontalScrollIndicator={true}
                 contentContainerStyle={styles.flatListContent}
             />
         </View>
@@ -56,13 +56,29 @@ const AllCategoriesCarousel = () => {
 
 const getStyles = (myColors) => StyleSheet.create({
     container: {
-        padding: 15,
-        borderRadius: 23,
+        padding: 10,
+        borderColor : myColors.borderColor,
+        borderWidth : 0.1,
+        backgroundColor: myColors.cardContainer,
+        borderRadius: 20,
+        shadowColor: myColors.text,
+        shadowOffset: {
+            width: 3,
+            height: 4,
+        },
+        shadowOpacity: 0.17,
+        shadowRadius: 4,
+        // Add shadow for Android
+        elevation: 8,
+        margin:6
+
+
     },
     productItem: {
         width: 150,
         marginRight: 1,
-       // alignItems: "center",
+        alignItems : "center"
+
     },
     image: {
         resizeMode: 'cover',
@@ -72,10 +88,11 @@ const getStyles = (myColors) => StyleSheet.create({
         marginBottom: 10,
     },
     productTitle: {
-        fontSize: 18,
+        fontSize: 16,
         color: myColors.text,
         fontFamily : 'System',
-      //  textAlign: 'center',
+        fontWeight : 'bold',
+       marginBottom : 8
     },
     flatListContent: {
     },

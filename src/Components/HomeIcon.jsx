@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { View, TouchableOpacity, StyleSheet, Modal, TextInput, FlatList, Text, Image } from "react-native";
+import { View, TouchableOpacity, StyleSheet, Modal, TextInput, FlatList, Text, Image, Platform } from "react-native";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { myColors as color } from "../Utils/MyColors";
 import { ThemeContext } from "../../contexts/ThemeContext";
@@ -33,14 +33,12 @@ const HomeIcon = () => {
             disabled={item.Stock <= 0}
         >
             <Image source={{ uri: item.Image }} style={styles.image} />
-            <View style={styles.productDetails}>
-                <Text style={styles.productName}>{item.Name}</Text>
-                {item.Stock > 0 ?
-                    <Text style={styles.price}>{`₪ ${item.Price}`}</Text>
-                    : (
-                        <Text style={styles.outOfStockText}>Out of Stock</Text>
-                    )}
-            </View>
+            <Text style={styles.productName}>{item.Name}</Text>
+            {item.Stock > 0 ?
+                <Text style={styles.price}>{`₪ ${item.Price}`}</Text>
+                : (
+                    <Text style={styles.outOfStockText}>Out of Stock</Text>
+                )}
         </TouchableOpacity>
     );
 
@@ -57,7 +55,7 @@ const HomeIcon = () => {
                 transparent={true}
                 visible={searchVisible}
                 animationType="none"
-                hardwareAccelerated = {true}
+                hardwareAccelerated={true}
                 onRequestClose={() => setSearchVisible(false)}
             >
                 <View style={styles.modalContainer}>
@@ -72,7 +70,7 @@ const HomeIcon = () => {
                         />
                     </View>
 
-                    {/* Display filtered products */}
+                    {/* Display filtered products in a two-column grid */}
                     <FlatList
                         data={filteredProducts}
                         keyExtractor={(item) => item.id}
@@ -83,10 +81,12 @@ const HomeIcon = () => {
                                 <Text style={{ color: myColors.text }}>No products found</Text>
                             </View>
                         )}
+                        numColumns={2}  // Set number of columns to 2
+                        columnWrapperStyle={styles.columnWrapper}  // Additional style for the row
                     />
 
                     <TouchableOpacity style={styles.closeButton} onPress={() => setSearchVisible(false)}>
-                        <Text style={{ color: myColors.text, fontSize: 14 }}>Close</Text>
+                        <Text style={{ color: 'white', fontSize: 16 }}>Close</Text>
                     </TouchableOpacity>
                 </View>
             </Modal>
@@ -120,7 +120,7 @@ const getStyles = (myColors) => StyleSheet.create({
         padding: 20,
     },
     searchBar: {
-        backgroundColor: myColors.white,
+        backgroundColor: myColors.searchBar,
         height: 50,
         borderRadius: 10,
         flexDirection: 'row',
@@ -133,29 +133,44 @@ const getStyles = (myColors) => StyleSheet.create({
         fontSize: 18,
         flex: 1,
     },
+    columnWrapper: {
+        justifyContent: 'space-between', // Ensures even spacing between columns
+    },
     productItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderBottomWidth: 1,
-        borderBottomColor: myColors.text,
-        paddingVertical: 10,
+        backgroundColor: myColors.cardContainer,
+        borderColor: myColors.border,
+        borderWidth: 1,
+        borderRadius: 10,
+        alignItems: "center",
+        padding: 10,
+        marginBottom: 15,
+        flex: 1,
+        margin: 5,
+    },
+    outOfStock: {
+        backgroundColor: myColors.cardContainer,
+        borderColor: myColors.border,
+        borderWidth: 1,
+        borderRadius: 10,
+        alignItems: "center",
+        padding: 10,
+        marginBottom: 15,
+        flex: 1,
+        margin: 5,
+        opacity: 0.6,
     },
     image: {
-        width: 80,
-        height: 80,
+        width: 100,
+        height: 100,
         borderRadius: 10,
-        marginRight: 10,
-    },
-    productDetails: {
-        flex: 1,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
+        marginBottom: 10,
     },
     productName: {
         fontSize: 16,
         fontWeight: 'bold',
         color: myColors.text,
+        textAlign: 'center',
+        marginBottom: 5,
     },
     price: {
         fontSize: 15,
@@ -172,21 +187,14 @@ const getStyles = (myColors) => StyleSheet.create({
         backgroundColor: myColors.clickable,
         padding: 15,
         borderRadius: 10,
-        marginTop: 20,
+        marginTop: 11,
+        marginBottom: Platform.OS === 'ios' ? 25 : 0,
         alignItems: 'center',
     },
     outOfStockText: {
         fontSize: 14,
         fontWeight: 'bold',
         color: 'red',
-    },
-    outOfStock: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderBottomWidth: 1,
-        borderBottomColor: myColors.text,
-        paddingVertical: 10,
-        opacity: 0.6,
     },
 });
 

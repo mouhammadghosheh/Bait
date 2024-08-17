@@ -69,7 +69,7 @@ const Home = () => {
                 <Animated.View style={{
                     height: headerHeight,
                     backgroundColor,
-                    borderBottomWidth: 0.5,
+                    borderBottomWidth: 0.3,
                     borderColor: myColors.text,
                     justifyContent: 'center',
                     position: 'absolute',
@@ -109,6 +109,8 @@ const Home = () => {
 
 const styles = StyleSheet.create({
     contentContainer: {
+        borderColor: 'black',
+        borderWidth: 2,
         paddingHorizontal: 5,
         paddingBottom: 20,
         paddingTop: 90,

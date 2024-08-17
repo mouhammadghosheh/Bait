@@ -11,7 +11,7 @@ const Dishes = ({ navigation }) => {
     const myColors = color[theme.mode];
     const styles = createStyles(myColors);
     const route = useRoute();
-    const { regionId, name,image } = route.params;
+    const { regionId, name, image } = route.params;
 
     const [dishes, setDishes] = useState([]);
 
@@ -23,26 +23,27 @@ const Dishes = ({ navigation }) => {
 
         fetchDishes();
     }, [regionId]);
-    console.log(dishes)
+
     const renderItem = ({ item }) => (
         <TouchableOpacity style={styles.dishItem} onPress={() => navigation.navigate('DishDetails', { dish: item })}>
             <Image source={{ uri: item.Image }} style={styles.dishImage} />
-            <View style={styles.dishTextContainer}>
-                <Text style={styles.dishName}>{item.Name}</Text>
-            </View>
+            <Text style={styles.dishName}>{item.Name}</Text>
         </TouchableOpacity>
     );
 
     return (
         <SafeAreaView style={styles.safeArea}>
             <Logo />
-                <Image source={{ uri: image }} style={styles.regionImage} />
-
+            <View style={styles.regionContainer}>
+            <Image source={{ uri: image }} style={styles.regionImage} />
+            </View>
             <Text style={styles.headerText}>Dishes in {name} Region</Text>
             <FlatList
                 data={dishes}
                 renderItem={renderItem}
                 keyExtractor={(item) => item.ID}
+                numColumns={2} // Display two columns
+                columnWrapperStyle={styles.columnWrapper} // Ensures even spacing
                 contentContainerStyle={styles.listContainer}
                 ListEmptyComponent={<Text style={styles.emptyText}>No dishes found.</Text>}
             />
@@ -64,31 +65,38 @@ const createStyles = (myColors) => StyleSheet.create({
     listContainer: {
         padding: 10,
     },
+    columnWrapper: {
+        justifyContent: 'space-between', // Even spacing between columns
+    },
     dishItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: myColors.secondary,
+        backgroundColor: myColors.cardContainer,
         padding: 15,
-        marginVertical: 8,
+        margin: 2,
         borderRadius: 10,
+        alignItems: 'center',
+        width: '48%', // Ensures two items fit in a row
+        shadowColor: myColors.text,
+        shadowOffset: {
+            width: 3,
+            height: 4,
+        },
+        shadowOpacity: 0.17,
+        shadowRadius: 4,
+        // Add shadow for Android
+        elevation: 3,
+
     },
     dishImage: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        marginRight: 15,
-    },
-    dishTextContainer: {
-        flex: 1,
+        width: '100%',
+        height: 120,
+        borderRadius: 10,
+        marginBottom: 10,
     },
     dishName: {
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: 'bold',
         color: myColors.text,
-    },
-    dishDescription: {
-        fontSize: 14,
-        color: myColors.text,
+        textAlign: 'center',
     },
     emptyText: {
         textAlign: 'center',
@@ -97,15 +105,26 @@ const createStyles = (myColors) => StyleSheet.create({
         color: myColors.text,
     },
     regionImage: {
-        width: '100%',
+        width: '95%',
         height: 200,
-        alignSelf : 'center',
-        resizeMode: 'cover',
+        alignSelf: 'center',
+        resizeMode: 'contain',
         marginBottom: 10,
         borderRadius: 30,
+
     },
+    regionContainer: {
+        shadowColor: myColors.text,
+        shadowOffset: {
+            width: 3,
+            height: 4,
+        },
+        shadowOpacity: 0.17,
+        shadowRadius: 4,
+        // Add shadow for Android
+        elevation: 3,
+
+    }
 });
-
-
 
 export default Dishes;

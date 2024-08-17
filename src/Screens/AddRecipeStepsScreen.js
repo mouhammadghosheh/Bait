@@ -118,7 +118,8 @@ const getStyles = (myColors) => StyleSheet.create({
     input: {
         borderWidth: 1,
         borderColor: myColors.text,
-        padding: 10,
+        padding: 15,
+       margin : 15,
         borderRadius: 8,
         marginBottom: 10,
         color: myColors.text,
@@ -127,32 +128,60 @@ const getStyles = (myColors) => StyleSheet.create({
         fontSize: 18,
         color: myColors.text,
         marginTop : 5,
+        padding : 15,
+        margin : 15,
+        borderColor : myColors.border,
+        borderWidth : 1,
+        borderRadius : 10
     },
     SubHeading: {
-        fontSize: 18,
+        fontSize: 16,
         color: myColors.text,
         marginTop : 10,
+        margin : 15,
+        textAlign : "center"
     },
     addButton: {
-        backgroundColor: myColors.secondary,
-        padding: 10,
+        backgroundColor: myColors.clickable,
+        padding: 15,
         borderRadius: 8,
         alignItems: 'center',
         marginBottom: 15,
+        margin : 15,
+        shadowColor: myColors.text,
+        shadowOffset: {
+            width: 3,
+            height: 4,
+        },
+        shadowOpacity: 0.17,
+        shadowRadius: 4,
+        // Add shadow for Android
+        elevation: 3,
     },
     addButtonText: {
-        color: myColors.text,
+        color: 'white',
         fontSize: 18,
+        fontWeight : 'bold'
     },
     saveButton: {
         backgroundColor: myColors.clickable,
-        padding: 16,
+        padding: 15,
         borderRadius: 8,
         alignItems: 'center',
         marginTop: 20,
+        margin:15,
+        shadowColor: myColors.text,
+        shadowOffset: {
+            width: 3,
+            height: 4,
+        },
+        shadowOpacity: 0.17,
+        shadowRadius: 4,
+        // Add shadow for Android
+        elevation: 3,
     },
     saveButtonText: {
-        color: myColors.text,
+        color: 'white',
         fontSize: 20,
         fontWeight: 'bold',
     },
@@ -162,6 +191,7 @@ const getStyles = (myColors) => StyleSheet.create({
         marginBottom: 10,
         marginTop: 30,
         fontWeight: 'bold',
+        textAlign : "center"
     },
     stepContainer: {
         marginTop: 30,

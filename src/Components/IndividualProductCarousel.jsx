@@ -30,15 +30,26 @@ const IndividualProductCarousel = ({ data, seeMore = true }) => {
                         <TouchableOpacity
                             activeOpacity={0.7}
                             style={{
-                                backgroundColor: myColors.white,
+                                backgroundColor: myColors.cardContainer,
+                                marginBottom: 8,
                                 height: responsiveHeight(23),
-                                borderWidth: 2,
-                                borderColor: myColors.white,
+                                borderWidth: 1,
+                                borderColor: myColors.border,
                                 width: responsiveWidth(35),
                                 marginRight: 10,
                                 borderRadius: 10,
                                 justifyContent: 'center',
-                                alignItems: 'center'
+                                alignItems: 'center',
+                                shadowColor: myColors.text,
+                                shadowOffset: {
+                                    width: 3,
+                                    height: 4,
+                                },
+                                shadowOpacity: 0.17,
+                                shadowRadius: 4,
+                                // Add shadow for Android
+                                elevation: 3,
+
                             }}
                             onPress={() => {
                                 navigateToCategoryProducts(extendedData[1].Category.split('/')[2])
@@ -56,12 +67,22 @@ const IndividualProductCarousel = ({ data, seeMore = true }) => {
                         <TouchableOpacity
                             activeOpacity={0.7}
                             style={{
+                                backgroundColor: myColors.cardContainer,
                                 height: responsiveHeight(23),
-                                borderWidth: 2,
-                                borderColor: myColors.white,
+                                borderWidth: 1,
+                                borderColor: myColors.border,
                                 width: responsiveWidth(35),
                                 marginRight: 10,
                                 borderRadius: 10,
+                                shadowColor: myColors.text,
+                                shadowOffset: {
+                                    width: 3,
+                                    height: 4,
+                                },
+                                shadowOpacity: 0.17,
+                                shadowRadius: 4,
+                                // Add shadow for Android
+                                elevation: 3,
                             }}
                             onPress={() => setSelectedItem(item)}  // Open popup on item press
                         >
@@ -72,18 +93,18 @@ const IndividualProductCarousel = ({ data, seeMore = true }) => {
                                     fontSize: 16,
                                     fontWeight: "600",
                                     height: 40,
-                                    color: myColors.text
+                                    color: myColors.text,
+                                    textAlign: 'center'
                                 }}>{item.Name}</Text>
                                 <View style={{
                                     flexDirection: "row",
                                     alignItems: "center",
-                                    justifyContent: "space-between",
-                                    marginTop: 1
+                                    justifyContent: "center",
                                 }}>
                                     <Text style={{
                                         fontSize: 15,
                                         fontWeight: 'bold',
-                                        color: myColors.text
+                                        color: myColors.text,
                                     }}>₪{item.Price} {item.Scale ? 'per Kg' : ''}</Text>
                                 </View>
                             </View>
@@ -92,37 +113,50 @@ const IndividualProductCarousel = ({ data, seeMore = true }) => {
                         <View
                             style={{
                                 height: responsiveHeight(23),
-                                borderWidth: 2,
-                                borderColor: myColors.white,
+                                borderWidth: 1,
+                                backgroundColor: myColors.cardContainer,
+                                borderColor: myColors.border,
                                 width: responsiveWidth(35),
                                 marginRight: 10,
                                 borderRadius: 10,
                                 opacity: 0.5,
+                                shadowColor: myColors.text,
+                                shadowOffset: {
+                                    width: 3,
+                                    height: 4,
+                                },
+                                shadowOpacity: 0.17,
+                                shadowRadius: 4,
+                                // Add shadow for Android
+                                elevation: 8,
                             }}
                         >
-                            <Image style={{ height: 100, borderRadius: 40, resizeMode: "contain", marginVertical: 1 }}
+                            <Image style={{ height: 100, borderRadius: 40, resizeMode: "contain", marginVertical: 10 }}
                                    source={{ uri: item.Image }} />
                             <View style={{ paddingHorizontal: 10 }}>
                                 <Text style={{
                                     fontSize: 16,
                                     fontWeight: "600",
-                                    height: 40,
+                                    height: 25,
+                                    textAlign: 'center',
                                     color: myColors.text
                                 }}>{item.Name}</Text>
                                 <View style={{
                                     flexDirection: "row",
                                     alignItems: "center",
-                                    justifyContent: "space-between",
+                                    justifyContent: "center", // Centering the price
                                 }}>
                                     <Text style={{
                                         fontSize: 15,
                                         fontWeight: 'bold',
-                                        color: myColors.text
+                                        color: myColors.text,
+                                        textAlign: 'center',
                                     }}>₪{item.Price} {item.Scale ? 'per Kg' : ''}</Text>
                                 </View>
                                 <Text style={{
                                     fontSize: 14,
                                     fontWeight: 'bold',
+                                    textAlign: 'center',
                                     color: 'red',
                                     marginTop: 5
                                 }}>Out of Stock</Text>

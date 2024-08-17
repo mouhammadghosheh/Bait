@@ -1,6 +1,10 @@
 export const myColors = {
     light: {
-        primary: '#FFF7F1',
+        primary: '#e5e5e5',
+        popup: '#e5e5e5',
+        border: 'rgba(0,0,0,0.22)',
+        searchBar: '#cccccc',
+        cardContainer : '#f0f0f0',
         secondary: '#C3E2C2',
         clickable: '#19A7CE',
         tertiary: '#D0D4CA',
@@ -13,10 +17,16 @@ export const myColors = {
         MenuItems : '#000000',
         logo : 'rgba(0,151,178,0.52)',
         highlight : '#21965b',
+        cardPlaceholder : 'white'
+
     },
     dark: {
-        primary: '#000000', // Example dark primary color
-        secondary: '#242424', // Adjust these colors as needed for your dark theme
+        primary: '#000000',
+        secondary: '#242424',
+        popup: '#2C2C2C',
+        cardContainer: '#242424',
+        searchBar: '#444444',
+        border: 'rgba(224,225,221,0.4)',
         clickable: '#19A7CE',
         tertiary: '#373737',
         back: '#1E1E1E',
@@ -28,6 +38,7 @@ export const myColors = {
         MenuItems : '#ffffff',
         logo : 'rgba(0,151,178,0.52)',
         highlight : '#21965b',
+        cardPlaceholder : 'white'
 
 
     }

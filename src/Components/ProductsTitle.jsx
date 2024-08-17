@@ -15,7 +15,7 @@ const ProductsTitle = ({title}) => {
             marginTop:10}}>
 
 
-            <Text style={{fontSize:20, fontWeight:"bold", color:myColors.text}}>{title}</Text>
+            <Text style={{fontSize:22, fontWeight:"bold", color:myColors.text}}>{title}</Text>
 
         </View>
     );
