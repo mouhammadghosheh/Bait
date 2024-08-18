@@ -435,6 +435,7 @@ const getStyles = (myColors) => StyleSheet.create({
         fontSize: 16,
     },
     commentContainer: {
+        marginTop:15,
         marginBottom: 12,
     },
     commentTitle: {
@@ -466,6 +467,7 @@ const getStyles = (myColors) => StyleSheet.create({
         color: myColors.text,
     },
     reviewContainer: {
+        marginTop: Platform.OS === 'ios' ? 20 : 0,
         flexDirection: 'row',
         alignItems: 'center',
     },

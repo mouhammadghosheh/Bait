@@ -21,8 +21,8 @@ const Home = () => {
     const myColors = color[theme.mode];
 
     const [recommendedItems, setRecommendedItems] = useState([]);
-    const [fruits, setFruits] = useState([]);
-    const [vegetables, setVegetables] = useState([]);
+    const [DailyNeeds, setDailyNeeds] = useState([]);
+    const [Specials, setSpecials] = useState([]);
 
     const scrollY = useRef(new Animated.Value(0)).current;
 
@@ -48,13 +48,12 @@ const Home = () => {
     useEffect(() => {
         const fetchData = async () => {
 
-            const fruitsData = await fetchProductData('Fruits');
-            const vegetablesData = await fetchProductData('Vegetables');
+            const Daily = await fetchProductData('Daily needs');
+            const SpecialData = await fetchProductData('Dishes');
             const recommendations = await getRecommendations();
-
-            setFruits(fruitsData);
-            setVegetables(vegetablesData);
-            setRecommendedItems(recommendations.length > 0 ? recommendations : fruitsData);
+            setDailyNeeds(Daily);
+            setSpecials(SpecialData);
+            setRecommendedItems(recommendations.length > 0 ? recommendations : Daily);
 
         };
 
@@ -96,9 +95,9 @@ const Home = () => {
                     <MemoizedProductsTitle title='Categories' />
                     <MemoizedAllCategoriesCarousel />
                     <MemoizedProductsTitle title='Specials' />
-                    <MemoizedIndividualProductCarousel data={fruits.slice(0, 5)} />
+                    <MemoizedIndividualProductCarousel data={Specials.slice(0, 5)} />
                     <MemoizedProductsTitle title='Daily Needs' />
-                    <MemoizedIndividualProductCarousel data={vegetables} />
+                    <MemoizedIndividualProductCarousel data={DailyNeeds.slice(0, 5)} />
                     <MemoizedProductsTitle title='Based on previous purchases' />
                     <MemoizedIndividualProductCarousel data={recommendedItems} seeMore={false} />
                 </View>

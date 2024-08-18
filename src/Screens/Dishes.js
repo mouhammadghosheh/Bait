@@ -33,8 +33,9 @@ const Dishes = ({ navigation }) => {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <Logo />
+            <Logo width={120}  height={120}/>
             <View style={styles.regionContainer}>
+
             <Image source={{ uri: image }} style={styles.regionImage} />
             </View>
             <Text style={styles.headerText}>Dishes in {name} Region</Text>
@@ -72,6 +73,7 @@ const createStyles = (myColors) => StyleSheet.create({
         backgroundColor: myColors.cardContainer,
         padding: 15,
         margin: 2,
+       marginBottom : 8,
         borderRadius: 10,
         alignItems: 'center',
         width: '48%', // Ensures two items fit in a row
@@ -105,12 +107,12 @@ const createStyles = (myColors) => StyleSheet.create({
         color: myColors.text,
     },
     regionImage: {
-        width: '95%',
+        width: '100%',
         height: 200,
         alignSelf: 'center',
-        resizeMode: 'contain',
-        marginBottom: 10,
+        resizeMode: 'cover',
         borderRadius: 30,
+        margin : 10
 
     },
     regionContainer: {
@@ -121,9 +123,8 @@ const createStyles = (myColors) => StyleSheet.create({
         },
         shadowOpacity: 0.17,
         shadowRadius: 4,
-        // Add shadow for Android
         elevation: 3,
-
+        margin : 10
     }
 });
 

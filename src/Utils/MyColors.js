@@ -4,7 +4,7 @@ export const myColors = {
         popup: '#e5e5e5',
         border: 'rgba(0,0,0,0.22)',
         searchBar: '#cccccc',
-        cardContainer : '#f0f0f0',
+        cardContainer : '#ffffff',
         secondary: '#C3E2C2',
         clickable: '#19A7CE',
         tertiary: '#D0D4CA',

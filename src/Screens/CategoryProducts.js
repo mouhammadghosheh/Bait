@@ -99,6 +99,7 @@ const getStyles = (myColors) => StyleSheet.create({
     productItemContainer: {
         flex: 1,
         padding: 5,
+
     },
     productItem: {
         backgroundColor: myColors.cardContainer,
@@ -107,7 +108,7 @@ const getStyles = (myColors) => StyleSheet.create({
         borderRadius: 10,
         alignItems: "center",
         padding: 10,
-        height: 200, // Fixed height for consistency
+        height: 220, // Fixed height for consistency
         justifyContent: "space-between", // Evenly space content
         shadowColor: myColors.text,
         shadowOffset: {

@@ -172,6 +172,7 @@ const SpecialDishScreen = () => {
     return (
         <SafeAreaView style={styles.safe}>
             <Logo />
+            <Text style={styles.text}>My Dishes</Text>
             <FlatList
                 data={customDishes}
                 keyExtractor={(item) => item.ID}
@@ -199,6 +200,12 @@ const getStyles = (myColors) => StyleSheet.create({
         backgroundColor: myColors.primary,
         paddingHorizontal: 16,
     },
+    text:{
+        justifyContent: "center",
+        textAlign: "center",
+        fontSize: 24,
+        fontWeight: 'bold',
+      },
     addButton: {
         backgroundColor: myColors.clickable,
         padding: 16,
@@ -264,6 +271,15 @@ const getStyles = (myColors) => StyleSheet.create({
         backgroundColor: myColors.clickable,
         padding: 10,
         borderRadius: 8,
+        shadowColor: myColors.text,
+        shadowOffset: {
+            width: 3,
+            height: 4,
+        },
+        shadowOpacity: 0.17,
+        shadowRadius: 4,
+        // Add shadow for Android
+        elevation: 3,
     },
     loader: {
         marginTop: 20,

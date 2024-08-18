@@ -86,7 +86,7 @@ const IndividualProductCarousel = ({ data, seeMore = true }) => {
                             }}
                             onPress={() => setSelectedItem(item)}  // Open popup on item press
                         >
-                            <Image style={{ height: 100, borderRadius: 40, resizeMode: "contain", marginVertical: 10 }}
+                            <Image style={{ height: 100, borderRadius: 20, resizeMode: "contain",margin : 5 ,marginVertical: 10 }}
                                    source={{ uri: item.Image }} />
                             <View style={{ paddingHorizontal: 10 }}>
                                 <Text style={{
@@ -131,7 +131,7 @@ const IndividualProductCarousel = ({ data, seeMore = true }) => {
                                 elevation: 8,
                             }}
                         >
-                            <Image style={{ height: 100, borderRadius: 40, resizeMode: "contain", marginVertical: 10 }}
+                            <Image style={{ height: 100, borderRadius: 10, resizeMode: "contain", marginVertical: 10 }}
                                    source={{ uri: item.Image }} />
                             <View style={{ paddingHorizontal: 10 }}>
                                 <Text style={{
