@@ -94,12 +94,13 @@ const Home = () => {
                     <MemoizedPromotionsCarousel />
                     <MemoizedProductsTitle title='Categories' />
                     <MemoizedAllCategoriesCarousel />
+                    <MemoizedProductsTitle title='Based on previous purchases' />
+                    <MemoizedIndividualProductCarousel data={recommendedItems} seeMore={false} />
                     <MemoizedProductsTitle title='Specials' />
                     <MemoizedIndividualProductCarousel data={Specials.slice(0, 5)} />
                     <MemoizedProductsTitle title='Daily Needs' />
                     <MemoizedIndividualProductCarousel data={DailyNeeds.slice(0, 5)} />
-                    <MemoizedProductsTitle title='Based on previous purchases' />
-                    <MemoizedIndividualProductCarousel data={recommendedItems} seeMore={false} />
+
                 </View>
             </ScrollView>
         </SafeAreaView>

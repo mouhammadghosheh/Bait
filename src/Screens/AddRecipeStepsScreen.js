@@ -16,7 +16,7 @@ import { addDoc, collection, doc } from "firebase/firestore";
 import { ThemeContext } from "../../contexts/ThemeContext";
 import { useProducts } from "../../contexts/ProductContext";
 import Logo from "../Components/Logo";
-import {useUser} from "../../contexts/UserContext";
+import { useUser } from "../../contexts/UserContext";
 
 const AddRecipeStepsScreen = () => {
     const route = useRoute();
@@ -25,16 +25,18 @@ const AddRecipeStepsScreen = () => {
     const { products } = useProducts();
     const [steps, setSteps] = useState([]);
     const [newStep, setNewStep] = useState('');
+    const [approvalFlag, setApprovalFlag] = useState(false); // Add approvalFlag state
     const [theme] = useContext(ThemeContext);
     let myColors = color[theme.mode];
     const styles = getStyles(myColors);
     const { user } = useUser();
-    const auth = authentication.currentUser
+    const auth = authentication.currentUser;
+
     const userInfo = {
         name: user.name,
         email: user.email,
     };
-    console.log(userInfo)
+
     const addStep = () => {
         if (newStep.trim()) {
             const newStepID = (steps.length + 1).toString();
@@ -67,7 +69,7 @@ const AddRecipeStepsScreen = () => {
                 Image: dishImage,
                 steps,
                 User: userInfo.name,
-
+                approvalFlag, // Include the approval flag
             };
 
             await addDoc(collection(doc(db, "Users", auth.uid), "CustomDishes"), newDish);
@@ -78,7 +80,7 @@ const AddRecipeStepsScreen = () => {
 
     return (
         <SafeAreaView style={styles.safe}>
-            <Logo/>
+            <Logo />
             <Text style={styles.sectionTitle}>Add Recipe Steps</Text>
             <Text style={styles.SubHeading}>Add Your recipe step by step so you can cook it later!</Text>
 
@@ -119,7 +121,7 @@ const getStyles = (myColors) => StyleSheet.create({
         borderWidth: 1,
         borderColor: myColors.text,
         padding: 15,
-       margin : 15,
+        margin: 15,
         borderRadius: 8,
         marginBottom: 10,
         color: myColors.text,
@@ -127,19 +129,19 @@ const getStyles = (myColors) => StyleSheet.create({
     stepText: {
         fontSize: 18,
         color: myColors.text,
-        marginTop : 5,
-        padding : 15,
-        margin : 15,
-        borderColor : myColors.border,
-        borderWidth : 1,
-        borderRadius : 10
+        marginTop: 5,
+        padding: 15,
+        margin: 15,
+        borderColor: myColors.border,
+        borderWidth: 1,
+        borderRadius: 10
     },
     SubHeading: {
         fontSize: 16,
         color: myColors.text,
-        marginTop : 10,
-        margin : 15,
-        textAlign : "center"
+        marginTop: 10,
+        margin: 15,
+        textAlign: "center"
     },
     addButton: {
         backgroundColor: myColors.clickable,
@@ -147,7 +149,7 @@ const getStyles = (myColors) => StyleSheet.create({
         borderRadius: 8,
         alignItems: 'center',
         marginBottom: 15,
-        margin : 15,
+        margin: 15,
         shadowColor: myColors.text,
         shadowOffset: {
             width: 3,
@@ -155,13 +157,12 @@ const getStyles = (myColors) => StyleSheet.create({
         },
         shadowOpacity: 0.17,
         shadowRadius: 4,
-        // Add shadow for Android
         elevation: 3,
     },
     addButtonText: {
         color: 'white',
         fontSize: 18,
-        fontWeight : 'bold'
+        fontWeight: 'bold'
     },
     saveButton: {
         backgroundColor: myColors.clickable,
@@ -169,7 +170,7 @@ const getStyles = (myColors) => StyleSheet.create({
         borderRadius: 8,
         alignItems: 'center',
         marginTop: 20,
-        margin:15,
+        margin: 15,
         shadowColor: myColors.text,
         shadowOffset: {
             width: 3,
@@ -177,7 +178,6 @@ const getStyles = (myColors) => StyleSheet.create({
         },
         shadowOpacity: 0.17,
         shadowRadius: 4,
-        // Add shadow for Android
         elevation: 3,
     },
     saveButtonText: {
@@ -191,7 +191,7 @@ const getStyles = (myColors) => StyleSheet.create({
         marginBottom: 10,
         marginTop: 30,
         fontWeight: 'bold',
-        textAlign : "center"
+        textAlign: "center"
     },
     stepContainer: {
         marginTop: 30,

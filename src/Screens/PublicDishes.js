@@ -45,24 +45,32 @@ const PublicDishes = () => {
 
             const dishes = await Promise.all(querySnapshot.docs.map(async (doc) => {
                 const data = doc.data();
-                const dishId = doc.id;
-                const dishData = {
-                    id: dishId,
-                    ...data,
-                };
 
-                if (auth.currentUser) {
-                    const docSnap = await getDoc(doc.ref);
-                    const dish = docSnap.data();
-                    if (dish.likes && Array.isArray(dish.likes)) {
-                        dishData.isLiked = dish.likes.includes(auth.currentUser.uid);
+                // Check if the dish is approved
+                if (data.isApproved) {
+                    const dishId = doc.id;
+                    const dishData = {
+                        id: dishId,
+                        ...data,
+                    };
+
+                    if (auth.currentUser) {
+                        const docSnap = await getDoc(doc.ref);
+                        const dish = docSnap.data();
+                        if (dish.likes && Array.isArray(dish.likes)) {
+                            dishData.isLiked = dish.likes.includes(auth.currentUser.uid);
+                        }
                     }
+
+                    return dishData;
                 }
 
-                return dishData;
+                return null;
             }));
 
-            dishes.sort((a, b) => {
+            const approvedDishes = dishes.filter(dish => dish !== null); // Filter out non-approved dishes
+
+            approvedDishes.sort((a, b) => {
                 if (sortOption === 'likes') {
                     return (b.likes?.length || 0) - (a.likes?.length || 0);
                 } else if (sortOption === 'reviews') {
@@ -70,7 +78,7 @@ const PublicDishes = () => {
                 }
             });
 
-            setPublicDishes(dishes);
+            setPublicDishes(approvedDishes);
             setError(null);
         } catch (err) {
             setError('Failed to load public dishes.');
@@ -78,6 +86,7 @@ const PublicDishes = () => {
             setLoading(false);
         }
     };
+
 
     useEffect(() => {
         fetchPublicDishes();

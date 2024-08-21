@@ -104,7 +104,7 @@ const SpecialDishScreen = () => {
                                 // Upload image and get public URL
                                 const imageUrl = dish.Image ? await uploadImage(dish.Image, dish.ID) : null;
 
-                                // Add the dish to the PublicDishes collection
+                                // Add the dish to the PublicDishes collection with isApproved set to false
                                 await addDoc(dishesCollectionRef, {
                                     Name: dish.Name,
                                     ID: dish.ID,
@@ -113,10 +113,11 @@ const SpecialDishScreen = () => {
                                     steps: dish.steps,
                                     User: userInfo.name,
                                     likes: [],
-                                    sharedAt: serverTimestamp()
+                                    sharedAt: serverTimestamp(),
+                                    isApproved: false // The dish will need approval before it becomes visible
                                 });
 
-                                Alert.alert("Success", `Dish ${dish.Name} shared to Public Dishes.`);
+                                Alert.alert("Success", `Dish ${dish.Name} shared to Public Dishes. It will be visible once approved.`);
                             } else {
                                 Alert.alert("Info", "This dish is already shared to Public Dishes.");
                             }
@@ -129,6 +130,7 @@ const SpecialDishScreen = () => {
             ]
         );
     };
+
 
 
     const renderItem = ({ item }) => (
